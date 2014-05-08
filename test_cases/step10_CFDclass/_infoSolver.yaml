@@ -1,0 +1,19 @@
+time:
+  start: 0
+  nt: 1
+  dt: 1.0E-03
+  writeEvery: 1
+
+Re: 40
+
+poisson:
+  solver: cg
+  AMG: False
+  tol: 1.0E-06
+  maxiter: 1000
+
+IBM:
+  name: MDF
+  moving: False
+  tol: 1.0E-03
+  maxiter: 10

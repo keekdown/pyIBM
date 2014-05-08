@@ -1,0 +1,15 @@
+u:
+  initialCondition: 1.0
+  boundaryCondition:
+    left: [dirichlet,1.0]
+    right: [dirichlet,1.0]
+    bottom: [dirichlet,1.0]
+    top: [dirichlet,1.0]
+
+v:
+  initialCondition: 1.0
+  boundaryCondition:
+    left: [dirichlet,1.0]
+    right: [dirichlet,1.0]
+    bottom: [dirichlet,1.0]
+    top: [dirichlet,1.0]

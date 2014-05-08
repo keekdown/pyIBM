@@ -1,0 +1,16 @@
+time:
+  scheme: RK3
+  start: 10000
+  nt: 10000
+  dt: 5.0E-04
+  writeEvery: 1000
+
+Re: 400
+
+poisson:
+  solver: cg
+  tol: 1.0E-06
+  maxiter: 200
+  precond:
+    name: AMG
+    cycle: V
