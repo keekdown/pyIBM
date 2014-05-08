@@ -41,13 +41,13 @@ class Variable(Solver,Mesh):
 	
 
 	def assembleMatrix(self,mat_name,scheme='central',direction=None):
-	'''Assemble a matrix related to a variable.'''
+		'''Assemble a matrix related to a variable.'''
 
 		setattr(self,mat_name,Matrix(self.bc,mat_name,scheme,direction))
 
 
 	def read(self,start):
-	'''Read the variable field from a file.'''
+		'''Read the variable field from a file.'''
 
 		infile = open(Solver.case_path+'/'+str(start)+'/'+self.name+'.dat','r')
 		i = 0
@@ -59,7 +59,7 @@ class Variable(Solver,Mesh):
 
 
 	def write(self,ite):
-	'''Write the variable field into a file.'''
+		'''Write the variable field into a file.'''
 
 		if (os.path.isdir(Solver.case_path+'/'+str(ite))==False):
 			os.system('mkdir '+Solver.case_path+'/'+str(ite))
