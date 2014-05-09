@@ -24,11 +24,14 @@ from poisson import *
 import timeInfo as timeInfo
 
 def main(arg):
-	case = str(arg[1])
+
+	pwd = os.getcwd()
+	case_name = arg[1]
+	case_path = pwd+'/'+case_name
 
 	print '\n{Meshing}'
 	tic = timeInfo.start()
-	mesh = Mesh('./'+case+'/_infoMesh.yaml')
+	mesh = Mesh(case_path+'/_infoMesh.yaml')
 	mesh.generate()
 	timeInfo.stop(tic,'Meshing')
 	print '{Writing mesh}'
@@ -37,13 +40,13 @@ def main(arg):
 	body = None
 	if (Mesh.is_body):
 		print '{Creating body}'
-		body = Body('./'+case+'/_infoBody.yaml')
+		body = Body(case_path+'/_infoBody.yaml')
 
 	print '{Plotting mesh}'
 	mesh.plot(body,is_show=False)
 
 	print '\n{Creating solver}'
-	solver = Solver('./'+case+'/_infoSolver.yaml')
+	solver = Solver(case_path+'/_infoSolver.yaml')
 
 	print '\n{Assembling matrices}'
 	tic = timeInfo.start()
@@ -85,9 +88,9 @@ def main(arg):
 	gamma = [1.,1./4,2./3]
 
 	if (Solver.start == 0):
-		outfile = open(case+'/forceCoeffs.dat','w')
+		outfile = open(case_path+'/forceCoeffs.dat','w')
 	else:
-		outfile = open(case+'/forceCoeffs.dat','a')
+		outfile = open(case_path+'/forceCoeffs.dat','a')
 
 	tic = timeInfo.start()
 	while(Solver.ite<Solver.start+Solver.nt):
