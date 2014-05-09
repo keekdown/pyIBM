@@ -7,18 +7,19 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.mesh import *
-from src.body import *
-from src.solver import *
-from src.variable import *
+sys.path.insert(0,'./src')
+from mesh import *
+from body import *
+from solver import *
+from variable import *
+from operations import *
 
 def plot_pressure(p,Mesh,Solver,case_path):
 	'''Plot pressure field on the mesh.'''
 
 	p.read()
 	
-	size = 10
-	plt.figure(num=None,figsize=(size,(Mesh.ymax-Mesh.ymin)/(Mesh.xmax-Mesh.xmin)*size))
+	plt.figure(num=None)
 	plt.grid(False)
 	plt.xlabel(r'$x$',fontsize=20)
 	plt.xlabel(r'$y$',fontsize=20)
@@ -53,8 +54,7 @@ def plot_velocity(u,v,Mesh,Solver,case_path):
 	u.read()
 	v.read()
 	
-	size = 10
-	plt.figure(num=None,figsize=(size,(Mesh.ymax-Mesh.ymin)/(Mesh.xmax-Mesh.xmin)*size))
+	plt.figure(num=None)
 	plt.grid(False)
 	plt.xlabel(r'$x$',fontsize=20)
 	plt.xlabel(r'$y$',fontsize=20)
@@ -94,8 +94,7 @@ def plot_vorticity(u,v,Mesh,Solver,case_path):
 	v.read()
 	w = grad(v,'x') - grad(u,'y')
 
-	size = 10
-	plt.figure(num=None,figsize=(size,(Mesh.ymax-Mesh.ymin)/(Mesh.xmax-Mesh.xmin)*size))
+	plt.figure(num=None)
 	plt.grid(False)
 	plt.xlabel(r'$x$',fontsize=20)
 	plt.xlabel(r'$y$',fontsize=20)
@@ -141,34 +140,38 @@ def main(arg):
 
 	solver = Solver(case_path+'_infoSolver.yaml')
 
-	variable = arg[2]
-	
-	if (variable == 'pressure'):
+	if (len(arg)>2):
+		variables = arg[2::]
+		if ('all' in arg):
+			variables = ['pressure','velocity','vorticity']
+	else:
+		variables = ['pressure','velocity','vorticity']
+
+	print variables	
+
+	if ('pressure' in variables):
 		p = Variable('p')
-	elif (variable in ['velocity','vorticity']):
+	if ('velocity' in variables or 'vorticity' in variables):
 		u = Variable('u')
 		v = Variable('v')
-		if (variable == 'vorticity'):
+		if ('vorticity' in variables):
 			u.assemble_matrix('gradient_y',scheme='central',direction='y')
 			v.assemble_matrix('gradient_x',scheme='central',direction='x')
-	else:
-		print 'Wrong variable name...'
-		sys.exit()
 
 	if not(os.path.isdir(case_path+'images')):
 		os.system('mkdir '+case_path+'images')
 
-	for ite in range(Solver.start,Solver.start+Solver.nt+1,Solver.write_every):
+	for ite in range(Solver.start,Solver.start+Solver.nt,Solver.write_every):
 		
 		Solver.ite += Solver.write_every
 
-		print 'Iteration ',ite
+		print 'Iteration ',Solver.ite
 		
-		if (variable == 'pressure'):
+		if ('pressure' in variables):
 			plot_pressure(p,Mesh,Solver,case_path)
-		elif (variable == 'velocity'):
+		if ('velocity' in variables):
 			plot_velocity(u,v,Mesh,Solver,case_path)
-		elif (variable == 'vorticity'):
+		if ('vorticity' in variables):
 			plot_vorticity(u,v,Mesh,Solver,case_path)
 
 
