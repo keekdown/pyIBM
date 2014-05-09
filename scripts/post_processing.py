@@ -14,7 +14,7 @@ from solver import *
 from variable import *
 from operations import *
 
-def plot_pressure(p,Mesh,Solver,case_path,body=None):
+def plot_pressure(p,case_path,body=None):
 	'''Plot pressure field on the mesh.'''
 
 	p.read()
@@ -34,7 +34,7 @@ def plot_pressure(p,Mesh,Solver,case_path,body=None):
 	cont = plt.contourf(Mesh.x,Mesh.y,p.field.reshape(Mesh.Ny,Mesh.Nx),\
 						levels,extend='both',cmap=cm.jet)
 	cbar = plt.colorbar(cont)
-	cbar.set_label(p.name)
+	cbar.set_label('pressure')
 
 	if (Mesh.is_body):
 		plt.plot(body.x,body.y,'k',ls='-',lw=1)
@@ -43,12 +43,12 @@ def plot_pressure(p,Mesh,Solver,case_path,body=None):
 	plt.ylim(Mesh.ymin,Mesh.ymax)
 
 	plt.title('pressure - '+str(Solver.ite))
-	plt.savefig(case_path+'images/'+'pressure'+str('%04d'%(Solver.ite,))+'.png')
+	plt.savefig(case_path+'/images/'+'pressure'+str('%04d'%(Solver.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
 
-def plot_velocity(u,v,Mesh,Solver,case_path,body=None):
+def plot_velocity(u,v,case_path,body=None):
 	'''Plot velocity field on the mesh.'''
 	
 	u.read()
@@ -68,7 +68,7 @@ def plot_velocity(u,v,Mesh,Solver,case_path,body=None):
 	cont = plt.contourf(Mesh.x,Mesh.y,magn.reshape(Mesh.Nx,Mesh.Ny),\
 						levels,extend='both',cmap=cm.jet)
 	cbar = plt.colorbar(cont)
-	cbar.set_label('magn')
+	cbar.set_label('velocity')
 
 	plt.streamplot(Mesh.x,Mesh.y,\
 				   u.field.reshape(Mesh.Ny,Mesh.Nx),\
@@ -81,13 +81,13 @@ def plot_velocity(u,v,Mesh,Solver,case_path,body=None):
 	plt.ylim(Mesh.ymin,Mesh.ymax)
 
 	plt.title('velocity - '+str(Solver.ite))
-	plt.savefig(case_path+'images/'+'velocity'+str('%04d'%(Solver.ite,))+'.png')
+	plt.savefig(case_path+'/images/'+'velocity'+str('%04d'%(Solver.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
 
 
-def plot_vorticity(u,v,Mesh,Solver,case_path,body=None):
+def plot_vorticity(u,v,case_path,body=None):
 	'''Plot vorticity field on the mesh.'''
 	
 	u.read()
@@ -109,7 +109,7 @@ def plot_vorticity(u,v,Mesh,Solver,case_path,body=None):
 	cont = plt.contourf(Mesh.x,Mesh.y,w.reshape(Mesh.Ny,Mesh.Nx),\
 						levels,extend='both',cmap=cm.jet)
 	cbar = plt.colorbar(cont)
-	cbar.set_label('vort')
+	cbar.set_label('vorticity')
 
 	if (Mesh.is_body):
 		plt.plot(body.x,body.y,'k',ls='-',lw=1)
@@ -118,7 +118,7 @@ def plot_vorticity(u,v,Mesh,Solver,case_path,body=None):
 	plt.ylim(Mesh.ymin,Mesh.ymax)
 
 	plt.title('vorticity - '+str(Solver.ite))
-	plt.savefig(case_path+'images/'+'vorticity'+str('%04d'%(Solver.ite,))+'.png')
+	plt.savefig(case_path+'/images/'+'vorticity'+str('%04d'%(Solver.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
@@ -130,17 +130,17 @@ def main(arg):
 	'''
 	pwd = os.getcwd()
 	case_name = arg[1]
-	case_path = pwd+'/'+case_name+'/'
+	case_path = pwd+'/'+case_name
 	
-	mesh = Mesh(case_path+'_infoMesh.yaml')
+	mesh = Mesh(case_path+'/_infoMesh.yaml')
 	mesh.read()
 
 	if (Mesh.is_body):
-		body = Body(case_path+'_infoBody.yaml')
+		body = Body(case_path+'/_infoBody.yaml')
 	else:
 		body = None
 
-	solver = Solver(case_path+'_infoSolver.yaml')
+	solver = Solver(case_path+'/_infoSolver.yaml')
 
 	if (len(arg)>2):
 		variables = arg[2::]
@@ -160,22 +160,22 @@ def main(arg):
 			u.assemble_matrix('gradient_y',scheme='central',direction='y')
 			v.assemble_matrix('gradient_x',scheme='central',direction='x')
 
-	if not(os.path.isdir(case_path+'images')):
-		os.system('mkdir '+case_path+'images')
+	if not(os.path.isdir(case_path+'/images')):
+		os.system('mkdir '+case_path+'/images')
 
 	for ite in range(Solver.start,Solver.start+Solver.nt,Solver.write_every):
 		
 		Solver.ite += Solver.write_every
 
 		print 'Iteration ',Solver.ite
-		
-		if ('pressure' in variables):
-			plot_pressure(p,Mesh,Solver,case_path,body)
-		if ('velocity' in variables):
-			plot_velocity(u,v,Mesh,Solver,case_path,body)
-		if ('vorticity' in variables):
-			plot_vorticity(u,v,Mesh,Solver,case_path,body)
 
+		if ('pressure' in variables):
+			plot_pressure(p,case_path,body)
+		if ('velocity' in variables):
+			plot_velocity(u,v,case_path,body)
+		if ('vorticity' in variables):
+			plot_vorticity(u,v,case_path,body)
+		
 
 if (__name__ == '__main__'):
 	print '\n\t----- pyIBM - POST-PROCESSING -----\n'
