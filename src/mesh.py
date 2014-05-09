@@ -54,8 +54,10 @@ class Mesh:
 		Mesh.ymin,Mesh.ymax = Mesh.direction[1].start,Mesh.direction[1].end
 		Mesh.Nx = Mesh.direction[0].N
 		Mesh.Ny = Mesh.direction[1].N
+		print '\n'
 		print '-> Number of points in the x-direction: ',Mesh.Nx
 		print '-> Number of points in the y-direction: ',Mesh.Ny
+		print '\n'
 
 	def generate(self):
 		for item in Mesh.direction:
