@@ -35,7 +35,7 @@ class Variable(Solver,Mesh):
 						*np.ones(Mesh.Nx*Mesh.Ny,dtype=float)
 		else:
 			self.field = np.empty(Mesh.Nx*Mesh.Ny,dtype=float)
-			self.read(Solver.start)
+			self.read()
 		self.prev = np.empty(Mesh.Nx*Mesh.Ny,dtype=float)
 		self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
 	
@@ -58,12 +58,12 @@ class Variable(Solver,Mesh):
 		infile.close()
 
 
-	def write(self,ite):
+	def write(self):
 		'''Write the variable field into a file.'''
 
-		if (os.path.isdir(Solver.case_path+'/'+str(ite))==False):
-			os.system('mkdir '+Solver.case_path+'/'+str(ite))
-		outfile = open(Solver.case_path+'/'+str(ite)+'/'+self.name+'.dat','w')
+		if (os.path.isdir(Solver.case_path+'/'+str(Solver.ite))==False):
+			os.system('mkdir '+Solver.case_path+'/'+str(Solver.ite))
+		outfile = open(Solver.case_path+'/'+str(Solver.ite)+'/'+self.name+'.dat','w')
 		for i in range(len(self.field)):
 			outfile.write(str(self.field[i])+'\n')
 		outfile.close()

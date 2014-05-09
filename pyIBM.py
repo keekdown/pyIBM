@@ -71,9 +71,9 @@ def main(arg):
 
 	poisson_p = Poisson(p,case_path+'/_infoSolver.yaml')
 
-	u.write(Solver.start)
-	v.write(Solver.start)
-	p.write(Solver.start)
+	u.write()
+	v.write()
+	p.write()
 
 	b = np.empty(Mesh.Nx*Mesh.Ny,dtype=float)
 
@@ -142,9 +142,9 @@ def main(arg):
 		
 		if (Solver.ite%Solver.write_every==0):
 			print '\n{Writing results}'
-			u.write(Solver.ite)
-			v.write(Solver.ite)
-			p.write(Solver.ite)
+			u.write()
+			v.write()
+			p.write()
 
 	timeInfo.stop(tic,'DONE')
 	outfile.close()
