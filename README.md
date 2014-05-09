@@ -1,14 +1,22 @@
 pyIBM - An Immersed Boundary Method Python code
 ===============================================
 
-*Updated: May 8th, 2014*
+*Updated: May 9th, 2014*
 
-Currently, pyIBM runs only on Unix systems. It is not supported on Windows
+Currently, pyIBM runs only on Unix systems. It is not supported on Windows.
 
-We recommend setting the environment variable `PYIBM_DIR` to point to the location of the pyIBM folder, since some of the validation scripts provided make use of it. For a `bash` shell, add the following line to the file `~/.bashrc` or `~/.bash_profile`:
+The code is entirely written in Python.
 
-	export PYIBM_DIR=/path/to/pyibm/folder
+Required:
+	- Python
+	- Numpy
+	- Scipy
+	- PyYaml
+	- Matplotlib
+	- PyAMG
 
-Reload the file:
+Python, Numpy, Scipy, PyYaml and Matplotlib can be found in the scientific Python distribution: Anaconda (available [here](https://store.continuum.io/cshop/anaconda)).
 
-	> source ~/.bashrc
+PyAMG can be installed via pip, in the `bash` shell as follow:
+	
+	> pip install --upgrade pyamg
