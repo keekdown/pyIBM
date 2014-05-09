@@ -113,13 +113,13 @@ def main(arg):
 			ibm(body,u,v)
 			outfile.write(str(Solver.ite*Solver.dt)+'\t'\
 						+str(body.cl)+'\t'+str(body.cd)+'\n')
+			print '{Body} \t Cl = %.3f \t Cd = %.3f' % (body.cl,body.cd)
 		
 		# solve the Poisson equation for pressure
 		b[:] = 1./Solver.dt*(grad(u,'x')[:]+grad(v,'y')[:])
 		p.field = poisson_p.solve(p.laplacian.mat,b-p.laplacian.bc_vect,p.field)
 		
 		print '{Poisson} Number of iterations: ',poisson_p.ite
-		print '{Body} \t Cl = %.3f \t Cd = %.3f' % (body.cl,body.cd)
 		
 		# update velocity field
 		u.field[:] += -Solver.dt*grad(p,'x')[:]
