@@ -95,6 +95,8 @@ class Mesh:
 		infile.close()
 
 	def plot(self,body=None,is_show=False):
+		if not(os.path.isdir(Mesh.case_path+'/images')):
+			os.system('mkdir '+Mesh.case_path+'/images')
 		plt.figure(num=None)
 		plt.grid(False)
 		plt.xlabel('x',fontsize=16)
@@ -106,16 +108,14 @@ class Mesh:
 		plt.xlim(Mesh.xmin,Mesh.xmax)
 		plt.ylim(Mesh.ymin,Mesh.ymax)
 		if (body != None):
-			plt.plot(body.xk,body.yk,'ko-',lw=1,markersize=4)
-			for k in range(body.Nk):
+			plt.plot(body.x,body.y,'ko-',lw=1,markersize=4)
+			for k in range(body.N):
 				plt.plot(Mesh.x[body.neighbor[k]%Mesh.Nx],Mesh.y[body.neighbor[k]/Mesh.Nx],\
 						'ro',markersize=4)
-			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny)+' / IB: '+str(body.Nk))
-			plt.savefig(Mesh.case_path+'/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'_'+str(body.Nk)+'.png')
+			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny)+' / IB: '+str(body.N))
+			plt.savefig(Mesh.case_path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'_'+str(body.N)+'.png')
 		else:
 			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny))
-			if not(os.path.isdir(Mesh.case_path+'/images')):
-				os.system('mkdir '+Mesh.case_path+'/images')
 			plt.savefig(Mesh.case_path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'.png')
 		if (is_show):
 			plt.show()

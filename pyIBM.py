@@ -36,11 +36,11 @@ def main(arg):
 	timeInfo.stop(tic,'Meshing')
 	print '{Writing mesh}'
 	mesh.write()
-	
+
 	body = None
 	if (Mesh.is_body):
 		print '{Creating body}'
-		body = Body(case_path+'/_infoBody.yaml')
+		body = Body(case_path+'/_infoBody.yaml',Mesh)
 
 	print '{Plotting mesh}'
 	mesh.plot(body,is_show=False)
@@ -108,10 +108,10 @@ def main(arg):
 					-v.field[:]*grad(v,'y')[:])
 		
 		if (Mesh.is_body):
-			fx = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float64)
-			fy = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float64)
+			fx = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float)
+			fy = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float)
 			if (body.is_moving):
-				body.kinematics()
+				body.kinematics(Mesh)
 			Cl,Cd = 0,0
 			for i in range(1):
 				body.u = interpolation(u.field,body)

@@ -14,7 +14,7 @@ from solver import *
 from variable import *
 from operations import *
 
-def plot_pressure(p,Mesh,Solver,case_path):
+def plot_pressure(p,Mesh,Solver,case_path,body=None):
 	'''Plot pressure field on the mesh.'''
 
 	p.read()
@@ -48,7 +48,7 @@ def plot_pressure(p,Mesh,Solver,case_path):
 	plt.clf()
 	plt.close()
 
-def plot_velocity(u,v,Mesh,Solver,case_path):
+def plot_velocity(u,v,Mesh,Solver,case_path,body=None):
 	'''Plot velocity field on the mesh.'''
 	
 	u.read()
@@ -87,7 +87,7 @@ def plot_velocity(u,v,Mesh,Solver,case_path):
 	plt.close()
 
 
-def plot_vorticity(u,v,Mesh,Solver,case_path):
+def plot_vorticity(u,v,Mesh,Solver,case_path,body=None):
 	'''Plot vorticity field on the mesh.'''
 	
 	u.read()
@@ -136,7 +136,9 @@ def main(arg):
 	mesh.read()
 
 	if (Mesh.is_body):
-		body = Body(case_path+'_infoBody.yaml')
+		body = Body(case_path+'_infoBody.yaml',Mesh)
+	else:
+		body = None
 
 	solver = Solver(case_path+'_infoSolver.yaml')
 
@@ -168,11 +170,11 @@ def main(arg):
 		print 'Iteration ',Solver.ite
 		
 		if ('pressure' in variables):
-			plot_pressure(p,Mesh,Solver,case_path)
+			plot_pressure(p,Mesh,Solver,case_path,body)
 		if ('velocity' in variables):
-			plot_velocity(u,v,Mesh,Solver,case_path)
+			plot_velocity(u,v,Mesh,Solver,case_path,body)
 		if ('vorticity' in variables):
-			plot_vorticity(u,v,Mesh,Solver,case_path)
+			plot_vorticity(u,v,Mesh,Solver,case_path,body)
 
 
 if (__name__ == '__main__'):
