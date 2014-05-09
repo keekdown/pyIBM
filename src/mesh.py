@@ -103,7 +103,6 @@ class Mesh:
 			plt.axhline(Mesh.y[i],Mesh.xmin,Mesh.xmax,linewidth=1)
 		plt.xlim(Mesh.xmin,Mesh.xmax)
 		plt.ylim(Mesh.ymin,Mesh.ymax)
-		plt.axis('equal')
 		if (body != None):
 			plt.plot(body.xk,body.yk,'ko-',lw=1,markersize=4)
 			for k in range(body.Nk):
@@ -113,7 +112,9 @@ class Mesh:
 			plt.savefig(Mesh.case_path+'/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'_'+str(body.Nk)+'.png')
 		else:
 			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny))
-			plt.savefig(Mesh.case_path+'/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'.png')
+			if not(os.path.isdir(Mesh.case_path+'/images')):
+				os.system('mkdir '+Mesh.case_path+'/images')
+			plt.savefig(Mesh.case_path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'.png')
 		if (is_show):
 			plt.show()
 		plt.clf()

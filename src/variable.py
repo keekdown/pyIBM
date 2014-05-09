@@ -46,12 +46,12 @@ class Variable(Solver,Mesh):
 		setattr(self,mat_name,Matrix(self.bc,mat_name,scheme,direction))
 
 
-	def read(self,start):
+	def read(self):
 		'''Read the variable field from a file.'''
 
-		infile = open(Solver.case_path+'/'+str(start)+'/'+self.name+'.dat','r')
+		infile = open(Solver.case_path+'/'+str(Solver.ite)+'/'+self.name+'.dat','r')
 		i = 0
-		for line in inFfile:
+		for line in infile:
 			data = line.split()
 			self.field[i] = float(data[0])
 			i += 1
