@@ -1,7 +1,6 @@
 #!/usr/env/bin python
 
 ##############################################
-# source: $pyIBM/src/pyIBM.py                #
 # pyIBM - Immersed Boundary Method in Python #
 # Olivier Mesnard (mesnardo@gwu.edu)         #
 # BarbaGroup (lorenabarba.com)               #
@@ -25,10 +24,12 @@ import timeInfo as timeInfo
 
 def main(arg):
 
+	# get case path
 	pwd = os.getcwd()
 	case_name = arg[1]
 	case_path = pwd+'/'+case_name
 
+	# create mesh
 	print '\n{Meshing}'
 	tic = timeInfo.start()
 	mesh = Mesh(case_path+'/_infoMesh.yaml')
@@ -37,6 +38,7 @@ def main(arg):
 	print '{Writing mesh}'
 	mesh.write()
 
+	# create immersed boundary
 	body = None
 	if (Mesh.is_body):
 		print '{Creating body}'
@@ -45,9 +47,11 @@ def main(arg):
 	print '{Plotting mesh}'
 	mesh.plot(body,is_show=False)
 
+	# create solver
 	print '\n{Creating solver}'
 	solver = Solver(case_path+'/_infoSolver.yaml')
 
+	# create variables and related matrices
 	print '\n{Assembling matrices}'
 	tic = timeInfo.start()
 	print 'u'
@@ -69,14 +73,13 @@ def main(arg):
 	p.assemble_matrix('gradient_y',scheme='central',direction='y')
 	timeInfo.stop(tic,'Assembling matrices')
 
+	# create Poisson solver
 	poisson_p = Poisson(p,case_path+'/_infoSolver.yaml')
 
-	u.write()
-	v.write()
-	p.write()
-
+	# initalization of the RHS of the Poisson equation
 	b = np.empty(Mesh.Nx*Mesh.Ny,dtype=float)
 
+	# time integration order --> depreciated
 	if (Solver.scheme == 'Euler'):
 		order=1
 	elif (Solver.scheme == 'RK3'):
@@ -87,10 +90,8 @@ def main(arg):
 	beta = [0.,1./4,2./3]
 	gamma = [1.,1./4,2./3]
 
-	if (Solver.start == 0):
-		outfile = open(case_path+'/forceCoeffs.dat','w')
-	else:
-		outfile = open(case_path+'/forceCoeffs.dat','a')
+	# open file to store force coefficients
+	outfile = open(case_path+'/forceCoeffs.dat',('w' if Solver.start==0 else 'a'))
 
 	tic = timeInfo.start()
 	while(Solver.ite<Solver.start+Solver.nt):
@@ -107,39 +108,24 @@ def main(arg):
 					-u.field[:]*grad(v,'x')[:]\
 					-v.field[:]*grad(v,'y')[:])
 		
+		# immersed boundary method
 		if (Mesh.is_body):
-			fx = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float)
-			fy = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float)
-			if (body.is_moving):
-				body.kinematics()
-			Cl,Cd = 0,0
-			for i in range(1):
-				body.u = interpolation(u.field,body)
-				body.v = interpolation(v.field,body)
-				body.fx[:] = (body.ud[:]-body.u[:])/Solver.dt
-				body.fy[:] = (body.vd[:]-body.v[:])/Solver.dt
-				for k in range(body.N):
-					Cd += -2.*body.fx[k]\
-							*Mesh.dx[body.neighbor[k]%Mesh.Nx]\
-							*Mesh.dy[body.neighbor[k]/Mesh.Ny]
-					Cl += -2.*body.fy[k]\
-							*Mesh.dx[body.neighbor[k]%Mesh.Nx]\
-							*Mesh.dy[body.neighbor[k]/Mesh.Nx]
-				fx += distribution(body.fx,body)
-				fy += distribution(body.fy,body)
-			u.field[:] += Solver.dt*fx[:]
-			v.field[:] += Solver.dt*fy[:]
-			print 'Cl = ',Cl,'\tCd = ',Cd
+			ibm(body,u,v)
 			outfile.write(str(Solver.ite*Solver.dt)+'\t'\
-						+str(Cl)+'\t'+str(Cd)+'\n')
-
+						+str(body.cl)+'\t'+str(body.cd)+'\n')
+		
+		# solve the Poisson equation for pressure
 		b[:] = 1./Solver.dt*(grad(u,'x')[:]+grad(v,'y')[:])
 		p.field = poisson_p.solve(p.laplacian.mat,b-p.laplacian.bc_vect,p.field)
-		print '{Poisson} Number of iterations: ',poisson_p.ite
 		
+		print '{Poisson} Number of iterations: ',poisson_p.ite
+		print '{Body} \t Cl = %.3f \t Cd = %.3f' % (body.cl,body.cd)
+		
+		# update velocity field
 		u.field[:] += -Solver.dt*grad(p,'x')[:]
 		v.field[:] += -Solver.dt*grad(p,'y')[:]
 		
+		# write variable fields
 		if (Solver.ite%Solver.write_every==0):
 			print '\n{Writing results}'
 			u.write()

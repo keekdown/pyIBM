@@ -20,6 +20,7 @@ class Body:
 		self.coord_file = info['IB']['coordinates']
 		self.is_moving = info['IB']['moving']
 		self.generate()
+		self.cl,self.cd = 0.,0.
 
 	def generate(self):
 		'''Generate the immersed boundary,
