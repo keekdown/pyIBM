@@ -34,12 +34,12 @@ class Poisson:
 		x,info = self.solver(A,b,xi,\
 							tol=self.tol,maxiter=self.maxiter,M=self.M,callback=self.iteration)
 		self.iterations.append(self.ite)
-		self.residuals.append(self.residuals(A,x,b))
+		self.residuals.append(self.residual(A,x,b))
 		return x
 
 	def iteration(self,x):
 		self.ite += 1
 	
-	def residuals(self,A,x,b):
+	def residual(self,A,x,b):
 		if (np.linalg.norm(b)!=0):
 			return np.linalg.norm(A.dot(x)-b)/np.linalg.norm(b)

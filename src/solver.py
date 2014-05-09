@@ -23,5 +23,5 @@ class Solver(Mesh):
 		Solver.ite = Solver.start
 		Solver.nt = info['time']['nt']
 		Solver.dt = info['time']['dt']
-		Solver.write_very = info['time']['writeEvery']
+		Solver.write_every = info['time']['writeEvery']
 		Solver.Re = info['Re']

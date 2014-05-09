@@ -40,7 +40,7 @@ class Variable(Solver,Mesh):
 		self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
 	
 
-	def assembleMatrix(self,mat_name,scheme='central',direction=None):
+	def assemble_matrix(self,mat_name,scheme='central',direction=None):
 		'''Assemble a matrix related to a variable.'''
 
 		setattr(self,mat_name,Matrix(self.bc,mat_name,scheme,direction))

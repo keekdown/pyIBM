@@ -69,7 +69,7 @@ def main(arg):
 	p.assemble_matrix('gradient_y',scheme='central',direction='y')
 	timeInfo.stop(tic,'Assembling matrices')
 
-	poisson_p = Poisson(p,'./'+case+'/_infoSolver.yaml')
+	poisson_p = Poisson(p,case_path+'/_infoSolver.yaml')
 
 	u.write(Solver.start)
 	v.write(Solver.start)
