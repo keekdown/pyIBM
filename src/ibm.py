@@ -2,9 +2,10 @@
 # Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 
-import numpy as np
 from math import *
-from mesh import *
+import numpy as np
+
+from mesh import Mesh
 
 def dh(r):
 	'''Compute the delta function,

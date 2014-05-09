@@ -2,15 +2,16 @@
 # Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 		
-import numpy as np
 from math import *
-from mesh import *
-from solver import *
+import numpy as np
+import yaml
+
+from mesh import Mesh
 
 class Body:
 	'''Creates an immersed boundary.'''
 
-	def __init__(self,info_body,Mesh):
+	def __init__(self,info_body):
 		self.info_body = info_body
 		infile = open(self.info_body,'r')
 		info = yaml.load(infile)
@@ -18,9 +19,9 @@ class Body:
 		self.name = info['IB']['name']
 		self.coord_file = info['IB']['coordinates']
 		self.is_moving = info['IB']['moving']
-		self.generate(Mesh)
+		self.generate()
 
-	def generate(self,Mesh):
+	def generate(self):
 		'''Generate the immersed boundary,
 		and initialize Lagrangian variables.
 		'''
@@ -44,7 +45,7 @@ class Body:
 		self.dy[1:self.N] = self.y[1:self.N] - self.y[0:self.N-1]
 		self.dx[0] = self.x[0] - self.x[-1]
 		self.dy[0] = self.y[0] - self.y[-1]
-		self.get_neighbors(Mesh)
+		self.get_neighbors()
 		print '\n-> Number of points on the body: ',self.N,'\n'
 		self.u = np.empty(self.N,dtype=float)
 		self.v = np.empty(self.N,dtype=float)
@@ -54,7 +55,7 @@ class Body:
 		self.vd = np.zeros(self.N,dtype=float)
 		self.x0,self.y0 = np.copy(self.x),np.copy(self.y)
 
-	def get_neighbors(self,Mesh):
+	def get_neighbors(self):
 		'''Find the closest Eulerian points,
 		for each Lagrangian point on the immersed boundary.
 		'''
@@ -65,7 +66,7 @@ class Body:
 				if (Mesh.y[j]<=self.y[k]<Mesh.y[j+1]): J = j
 			self.neighbor[k] = J*Mesh.Nx+I
 
-	def kinematics(self,Mesh):
+	def kinematics(self):
 		'''Define the kinematics of a moving immersed boundary.
 		This function needs to be adapted to a given problem/application.
 		'''
@@ -76,4 +77,4 @@ class Body:
 		self.x[:] = self.y0[:] + A*sin(2*pi*f*Solver.ite*Solver.dt)
 		self.ud[:] = 0.0
 		self.vd[:] = 2*pi*f*A*cos(2*pi*f*Solver.ite*Solver.dt)
-		self.getNeighbors(Mesh)
+		self.getNeighbors()

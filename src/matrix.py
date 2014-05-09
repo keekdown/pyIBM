@@ -8,9 +8,9 @@ import numpy as np
 from scipy.sparse import *
 import yaml
 
-from mesh import *
+from mesh import Mesh
 
-class Matrix(Mesh):
+class Matrix:
 	'''Create a matrix.'''
 
 	def __init__(self,bc,name,scheme,direction):

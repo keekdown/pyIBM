@@ -6,9 +6,9 @@ import os
 import numpy as np
 import yaml
 
-from mesh import *
+from mesh import Mesh
 
-class Solver(Mesh):
+class Solver:
 	'''Create the solver by reading the solver file
 	in the case folder.
 	'''

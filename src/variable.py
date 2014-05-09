@@ -8,11 +8,11 @@ import numpy as np
 from scipy.sparse import *
 import yaml
 
-from mesh import *
-from solver import *
+from mesh import Mesh
+from solver import Solver
 from matrix import *
 
-class BoundaryConditions(Solver,Mesh):
+class BoundaryConditions:
 	'''Create the boundary condition with the type and value.
 	Type: Dirichlet or Neummann.
 	'''
@@ -22,7 +22,7 @@ class BoundaryConditions(Solver,Mesh):
 		self.bottom = [info_bc['bottom'][0],info_bc['bottom'][1]*np.ones(Mesh.Nx,dtype=float)]
 		self.top = [info_bc['top'][0],info_bc['top'][1]*np.ones(Mesh.Nx,dtype=float)]
 
-class Variable(Solver,Mesh):
+class Variable:
 	'''Create a variable.'''
 
 	def __init__(self,name):

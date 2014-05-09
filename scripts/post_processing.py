@@ -136,7 +136,7 @@ def main(arg):
 	mesh.read()
 
 	if (Mesh.is_body):
-		body = Body(case_path+'_infoBody.yaml',Mesh)
+		body = Body(case_path+'_infoBody.yaml')
 	else:
 		body = None
 

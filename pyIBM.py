@@ -40,7 +40,7 @@ def main(arg):
 	body = None
 	if (Mesh.is_body):
 		print '{Creating body}'
-		body = Body(case_path+'/_infoBody.yaml',Mesh)
+		body = Body(case_path+'/_infoBody.yaml')
 
 	print '{Plotting mesh}'
 	mesh.plot(body,is_show=False)
@@ -111,7 +111,7 @@ def main(arg):
 			fx = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float)
 			fy = np.zeros(Mesh.Nx*Mesh.Ny,dtype=float)
 			if (body.is_moving):
-				body.kinematics(Mesh)
+				body.kinematics()
 			Cl,Cd = 0,0
 			for i in range(1):
 				body.u = interpolation(u.field,body)
