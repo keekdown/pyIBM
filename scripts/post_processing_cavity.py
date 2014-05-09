@@ -7,9 +7,10 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.mesh import *
-from src.solver import *
-from src.variable import *
+sys.path.insert(0,'./src')
+from mesh import *
+from solver import *
+from variable import *
 
 def main(arg):
 	'''Plot velocity at center lines,
@@ -29,9 +30,10 @@ def main(arg):
 	p = Variable('p')
 
 	print '{Post-processing}: Comparison with Ghia et al. (1982)'
-	u.read(Solver.start+Solver.nt)
-	v.read(Solver.start+Solver.nt)
-	p.read(Solver.start+Solver.nt)
+	Solver.ite = Solver.start+Solver.nt
+	u.read()
+	v.read()
+	p.read()
 	
 	infile = open(pwd+'/resources/ghia_et_al_1982/u_vertical_line.dat','r')
 	y_vl_ghia,u_vl_ghia = [],[]
