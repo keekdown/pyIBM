@@ -1,0 +1,15 @@
+- direction: x
+  start: -5.0
+  subdomains:
+    - end: 10.0
+      cells: 120
+      stretchRatio: 1.0
+
+- direction: y
+  start: -7.5
+  subdomains:
+    - end: 7.5
+      cells: 120
+      stretchRatio: 1.0
+
+- body

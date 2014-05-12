@@ -1,0 +1,39 @@
+u:
+  initialCondition: 1.0
+  boundaryCondition:
+    left: [dirichlet,1.0]
+    right: [neumann,0.0]
+    bottom: [neumann,0.0]
+    top: [neumann,0.0]
+
+v:
+  initialCondition: 0.0
+  boundaryCondition:
+    left: [dirichlet,0.0]
+    right: [neumann,0.0]
+    bottom: [dirichlet,0.0]
+    top: [dirichlet,0.0]
+
+p:
+  initialCondition: 0.0
+  boundaryCondition:
+    left: [dirichlet,0.0]
+    right: [neumann,0.0]
+    bottom: [neumann,0.0]
+    top: [neumann,0.0]
+
+fx:
+  initialCondition: 0.0
+  boundaryCondition:
+    left: [dirichlet,0.0]
+    right: [dirichlet,0.0]
+    bottom: [dirichlet,0.0]
+    top: [dirichlet,0.0]
+
+fy:
+  initialCondition: 0.0
+  boundaryCondition:
+    left: [dirichlet,0.0]
+    right: [dirichlet,0.0]
+    bottom: [dirichlet,0.0]
+    top: [dirichlet,0.0]
