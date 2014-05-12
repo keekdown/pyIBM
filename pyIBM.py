@@ -35,10 +35,10 @@ def main(arg):
 
 	# create immersed boundary
 	if Mesh.is_body:
-		print '{Creating body}'
+		print '\n{Creating body}'
 		body = Body()
 
-	print '{Plotting mesh}'
+	print '\n{Plotting mesh}'
 	mesh.plot(body if Mesh.is_body else None, is_show=False)
 
 	# create solver
