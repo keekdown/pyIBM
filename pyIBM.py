@@ -11,6 +11,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0,'./src')
+from case import *
 from mesh import *
 from body import *
 from solver import *
