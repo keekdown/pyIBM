@@ -24,31 +24,25 @@ import timeInfo as timeInfo
 
 def main(arg):
 
-	# get case path
-	pwd = os.getcwd()
-	case_name = arg[1]
-	case_path = pwd+'/'+case_name
+	Case(arg[1])
 
 	# create mesh
 	print '\n{Meshing}'
 	tic = timeInfo.start()
-	mesh = Mesh(case_path+'/_infoMesh.yaml')
-	mesh.generate()
+	mesh = Mesh()
 	timeInfo.stop(tic, 'Meshing')
-	print '{Writing mesh}'
-	mesh.write()
 
 	# create immersed boundary
 	if Mesh.is_body:
 		print '{Creating body}'
-		body = Body(case_path+'/_infoBody.yaml')
+		body = Body()
 
 	print '{Plotting mesh}'
 	mesh.plot(body if Mesh.is_body else None, is_show=False)
 
 	# create solver
 	print '\n{Creating solver}'
-	solver = Solver(case_path+'/_infoSolver.yaml')
+	Solver()
 
 	# create variables and related matrices
 	print '\n{Assembling matrices}'
@@ -73,13 +67,13 @@ def main(arg):
 	timeInfo.stop(tic, 'Assembling matrices')
 
 	# create Poisson solver
-	poisson_p = Poisson(p, case_path+'/_infoSolver.yaml')
+	poisson_p = Poisson(p)
 
 	# initalization of the RHS of the Poisson equation
 	b = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
 
 	# open file to store force coefficients
-	outfile = open(case_path+'/forceCoeffs.dat', ('w' if Solver.start == 0 else 'a'))
+	outfile = open(Case.path+'/forceCoeffs.dat', ('w' if Solver.start == 0 else 'a'))
 
 	tic = timeInfo.start()
 	while Solver.ite < Solver.start + Solver.nt:
@@ -103,7 +97,7 @@ def main(arg):
 			print '{Body} \t Cl = %.3f \t Cd = %.3f' % (body.cl,body.cd)
 		
 		# solve the Poisson equation for pressure
-		b[:] = 1./Solver.dt*(grad(u, 'x')[:]+grad(v, 'y')[:])
+		b[:] = 1./Solver.dt * (grad(u, 'x')[:] + grad(v, 'y')[:])
 		p.field = poisson_p.solve(p.laplacian.mat, b-p.laplacian.bc_vect, p.field)
 		
 		print '{Poisson} Number of iterations: ', poisson_p.ite

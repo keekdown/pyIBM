@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 sys.path.insert(0,'./src')
+from case import *
 from mesh import *
 from solver import *
 from variable import *
@@ -16,14 +17,11 @@ def main(arg):
 	'''Plot velocity at center lines,
 	with comparison Ghia et al. (1982) experimental data.
 	'''
-	pwd = os.getcwd()
-	case_name = arg[1]
-	case_path = pwd+'/'+case_name
+	Case(arg[1])
 
-	mesh = Mesh(case_path+'/_infoMesh.yaml')
-	mesh.read()
+	mesh = Mesh()
 
-	solver = Solver(case_path+'/_infoSolver.yaml')
+	Solver()
 
 	u = Variable('u')
 	v = Variable('v')
@@ -35,7 +33,7 @@ def main(arg):
 	v.read()
 	p.read()
 	
-	infile = open(pwd+'/resources/ghia_et_al_1982/u_vertical_line.dat', 'r')
+	infile = open(os.getcwd()+'/resources/ghia_et_al_1982/u_vertical_line.dat', 'r')
 	y_vl_ghia, u_vl_ghia = [], []
 	index, row = 0, 0
 	for line in infile:
@@ -50,7 +48,7 @@ def main(arg):
 			u_vl_ghia.append(float(data[row]))
 	infile.close()
 	
-	infile = open(pwd+'/resources/ghia_et_al_1982/v_horizontal_line.dat', 'r')
+	infile = open(os.getcwd()+'/resources/ghia_et_al_1982/v_horizontal_line.dat', 'r')
 	x_hl_ghia, v_hl_ghia = [], []
 	index, row = 0, 0
 	for line in infile:
@@ -88,7 +86,7 @@ def main(arg):
 	plt.plot(y_vl, u_vl, 'b-', linewidth=2)
 	plt.plot(y_vl_ghia, u_vl_ghia, 'ro', markersize=6)
 	plt.legend(['pyIBM', 'Ghia et al. (1982)'], loc='best', prop={'size':16})
-	plt.savefig(case_path+'/images/velocity_vertical_line_'+str(Solver.start+Solver.nt)+'.png')
+	plt.savefig(Case.path+'/images/velocity_vertical_line_'+str(Solver.start+Solver.nt)+'.png')
 	plt.clf()
 	plt.close()
 
@@ -99,7 +97,7 @@ def main(arg):
 	plt.plot(x_hl, v_hl, 'b-', linewidth=2)
 	plt.plot(x_hl_ghia, v_hl_ghia, 'ro', markersize=6)
 	plt.legend(['pyIBM', 'Ghia et al. (1982)'], loc='best', prop={'size':16})
-	plt.savefig(case_path+'/images/velocity_horizontal_line_'+str(Solver.start+Solver.nt)+'.png')
+	plt.savefig(Case.path+'/images/velocity_horizontal_line_'+str(Solver.start+Solver.nt)+'.png')
 	plt.clf()
 	plt.close()
 

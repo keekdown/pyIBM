@@ -8,13 +8,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 sys.path.insert(0,'./src')
+from case import *
 from mesh import *
 from body import *
 from solver import *
 from variable import *
 from operations import *
 
-def plot_pressure(p, case_path, body=None):
+def plot_pressure(p, body=None):
 	'''Plot pressure field on the mesh.'''
 
 	p.read()
@@ -43,12 +44,12 @@ def plot_pressure(p, case_path, body=None):
 	plt.ylim(Mesh.ymin, Mesh.ymax)
 
 	plt.title('pressure - '+str(Solver.ite))
-	plt.savefig(case_path+'/images/'+'pressure'+str('%04d'%(Solver.ite,))+'.png')
+	plt.savefig(Case.path+'/images/'+'pressure'+str('%04d'%(Solver.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
 
-def plot_velocity(u, v, case_path, body=None):
+def plot_velocity(u, v, body=None):
 	'''Plot velocity field on the mesh.'''
 	
 	u.read()
@@ -81,13 +82,13 @@ def plot_velocity(u, v, case_path, body=None):
 	plt.ylim(Mesh.ymin, Mesh.ymax)
 
 	plt.title('velocity - '+str(Solver.ite))
-	plt.savefig(case_path+'/images/'+'velocity'+str('%04d'%(Solver.ite,))+'.png')
+	plt.savefig(Case.path+'/images/'+'velocity'+str('%04d'%(Solver.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
 
 
-def plot_vorticity(u, v, case_path, body=None):
+def plot_vorticity(u, v, body=None):
 	'''Plot vorticity field on the mesh.'''
 	
 	u.read()
@@ -118,7 +119,7 @@ def plot_vorticity(u, v, case_path, body=None):
 	plt.ylim(Mesh.ymin, Mesh.ymax)
 
 	plt.title('vorticity - '+str(Solver.ite))
-	plt.savefig(case_path+'/images/'+'vorticity'+str('%04d'%(Solver.ite,))+'.png')
+	plt.savefig(Case.path+'/images/'+'vorticity'+str('%04d'%(Solver.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
@@ -128,16 +129,13 @@ def main(arg):
 	'''Plot either pressure, velocity or vorticity,
 	at every time saved in the case folder.
 	'''
-	pwd = os.getcwd()
-	case_name = arg[1]
-	case_path = pwd+'/'+case_name
-	
-	mesh = Mesh(case_path+'/_infoMesh.yaml')
-	mesh.read()
+	Case(arg[1])
 
-	body = Body(case_path+'/_infoBody.yaml') if Mesh.is_body else None
+	mesh = Mesh()
 
-	solver = Solver(case_path+'/_infoSolver.yaml')
+	body = Body() if Mesh.is_body else None
+
+	Solver()
 
 	if len(arg) > 2:
 		variables = arg[2::]
@@ -157,8 +155,8 @@ def main(arg):
 			u.assemble_matrix('gradient_y', scheme='central', direction='y')
 			v.assemble_matrix('gradient_x', scheme='central', direction='x')
 
-	if not os.path.isdir(case_path+'/images'):
-		os.system('mkdir '+case_path+'/images')
+	if not os.path.isdir(Case.path+'/images'):
+		os.system('mkdir '+Case.path+'/images')
 
 	for ite in xrange(Solver.start, Solver.start+Solver.nt, Solver.write_every):
 		
@@ -167,11 +165,11 @@ def main(arg):
 		print 'Iteration ', Solver.ite
 
 		if 'pressure' in variables:
-			plot_pressure(p, case_path, body)
+			plot_pressure(p, body)
 		if 'velocity' in variables:
-			plot_velocity(u, v, case_path, body)
+			plot_velocity(u, v, body)
 		if 'vorticity' in variables:
-			plot_vorticity(u, v, case_path, body)
+			plot_vorticity(u, v, body)
 		
 
 if __name__ == '__main__':

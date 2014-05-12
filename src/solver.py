@@ -7,15 +7,14 @@ import numpy as np
 import yaml
 
 from mesh import Mesh
+from case import Case
 
 class Solver:
 	'''Create the solver by reading the solver file
 	in the case folder.
 	'''
-	def __init__(self, info_solver):
-		Solver.info_solver = info_solver
-		Solver.case_path = os.path.dirname(os.path.abspath(Solver.info_solver))
-		infile = open(Solver.info_solver, 'r')
+	def __init__(self):
+		infile = open(Case.path+'/_infoSolver.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()
 		Solver.scheme = info['time']['scheme']

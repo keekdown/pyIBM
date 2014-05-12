@@ -8,6 +8,7 @@ import numpy as np
 from scipy.sparse import *
 import yaml
 
+from case import Case
 from mesh import Mesh
 from solver import Solver
 from matrix import *
@@ -27,7 +28,7 @@ class Variable:
 
 	def __init__(self, name):
 		self.name = name
-		infile = open(Solver.case_path+'/_infoFlow.yaml', 'r')
+		infile = open(Case.path+'/_infoFlow.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()
 		if Solver.start == 0:
@@ -48,7 +49,7 @@ class Variable:
 	def read(self):
 		'''Read the variable field from a file.'''
 
-		infile = open(Solver.case_path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'r')
+		infile = open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'r')
 		i = 0
 		for line in infile:
 			data = line.split()
@@ -60,9 +61,9 @@ class Variable:
 	def write(self):
 		'''Write the variable field into a file.'''
 
-		if not os.path.isdir(Solver.case_path+'/'+str(Solver.ite)):
-			os.system('mkdir '+Solver.case_path+'/'+str(Solver.ite))
-		outfile = open(Solver.case_path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'w')
+		if not os.path.isdir(Case.path+'/'+str(Solver.ite)):
+			os.system('mkdir '+Case.path+'/'+str(Solver.ite))
+		outfile = open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'w')
 		for i in xrange(len(self.field)):
 			outfile.write(str(self.field[i])+'\n')
 		outfile.close()

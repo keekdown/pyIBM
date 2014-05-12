@@ -7,14 +7,15 @@ import scipy.sparse.linalg as spla
 import yaml
 import pyamg
 
+from case import Case
+
 class Poisson:
 	'''Create Poisson solvers.'''
 
 	solvers = {'cg':spla.cg, 'gmres':spla.gmres, 'bicg':spla.bicg}
 
-	def __init__(self, var, info_solver):
-		self.info_solver = info_solver
-		infile = open(self.info_solver, 'r')
+	def __init__(self, var):
+		infile = open(Case.path+'/_infoSolver.yaml', 'r')
 		data = yaml.load(infile)
 		infile.close()
 		self.solver = Poisson.solvers[data['poisson']['solver']]

@@ -7,13 +7,13 @@ import numpy as np
 import yaml
 
 from mesh import Mesh
+from case import Case
 
 class Body:
-	'''Creates an immersed boundary.'''
+	'''Create an immersed boundary.'''
 
-	def __init__(self, info_body):
-		self.info_body = info_body
-		infile = open(self.info_body, 'r')
+	def __init__(self):
+		infile = open(Case.path+'/_infoBody.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()
 		self.name = info['IB']['name']
@@ -26,7 +26,7 @@ class Body:
 		'''Generate the immersed boundary,
 		and initialize Lagrangian variables.
 		'''
-		infile = open(Mesh.case_path+'/'+self.coord_file, 'r')
+		infile = open(Case.path+'/'+self.coord_file, 'r')
 		index, i = 0, 0
 		for line in infile:
 			data = line.split()

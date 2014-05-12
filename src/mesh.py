@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import yaml		
 
+from case import Case
+
 class Subdomain:
 	def __init__(self, info_subdomain):
 		self.end = info_subdomain['end']
@@ -37,23 +39,25 @@ class Direction:
 
 
 class Mesh:
-	def __init__(self, info_mesh):
-		Mesh.info_mesh = info_mesh
-		Mesh.case_path = os.path.dirname(os.path.abspath(self.info_mesh))
+	def __init__(self):
 		Mesh.is_body = False
-		infile = open(self.info_mesh, 'r')
+		infile = open(Case.path+'/_infoMesh.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()
 		Mesh.direction = []
 		for i in xrange(len(info)):
 			if 'direction' in info[i]:
-				self.direction.append(Direction(info[i]))
+				Mesh.direction.append(Direction(info[i]))
 			elif 'body' in info[i]:
 				Mesh.is_body = True
 		Mesh.xmin, Mesh.xmax = Mesh.direction[0].start, Mesh.direction[0].end
 		Mesh.ymin, Mesh.ymax = Mesh.direction[1].start, Mesh.direction[1].end
 		Mesh.Nx = Mesh.direction[0].N
 		Mesh.Ny = Mesh.direction[1].N
+
+		self.generate()
+		self.write()
+
 		print '\n'
 		print '-> Number of points in the x-direction: ', Mesh.Nx
 		print '-> Number of points in the y-direction: ', Mesh.Ny
@@ -66,7 +70,7 @@ class Mesh:
 		Mesh.dx, Mesh.dy = Mesh.direction[1].delta,Mesh.direction[1].delta
 
 	def write(self):
-		outfile = open(Mesh.case_path+'/mesh.dat', 'w')
+		outfile = open(Case.path+'/mesh.dat', 'w')
 		outfile.write(str(Mesh.Nx)+'\t'+str(Mesh.Ny)+'\n')
 		for i in xrange(Mesh.Nx):
 			outfile.write(str(Mesh.x[i])+'\t'+str(Mesh.dx[i])+'\n')
@@ -75,7 +79,7 @@ class Mesh:
 		outfile.close()
 
 	def read(self):
-		infile = open(Mesh.case_path+'/mesh.dat', 'r')
+		infile = open(Case.path+'/mesh.dat', 'r')
 		index, i = 0, 0
 		for line in infile:
 			data = line.split()
@@ -94,9 +98,9 @@ class Mesh:
 				i += 1
 		infile.close()
 
-	def plot(self, body=None, is_show=False):
-		if not os.path.isdir(Mesh.case_path+'/images'):
-			os.system('mkdir '+Mesh.case_path+'/images')
+	def plot(self,body=None, is_show=False):
+		if not os.path.isdir(Case.path+'/images'):
+			os.system('mkdir '+Case.path+'/images')
 		plt.figure(num=None)
 		plt.grid(False)
 		plt.xlabel('x', fontsize=16)
@@ -113,10 +117,10 @@ class Mesh:
 				plt.plot(Mesh.x[body.neighbor[k]%Mesh.Nx], Mesh.y[body.neighbor[k]/Mesh.Nx],\
 						'ro', markersize=4)
 			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny)+' / IB: '+str(body.N))
-			plt.savefig(Mesh.case_path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'_'+str(body.N)+'.png')
+			plt.savefig(Case.path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'_'+str(body.N)+'.png')
 		else:
 			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny))
-			plt.savefig(Mesh.case_path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'.png')
+			plt.savefig(Case.path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'.png')
 		if is_show:
 			plt.show()
 		plt.clf()
