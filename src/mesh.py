@@ -112,7 +112,7 @@ class Mesh:
 		plt.xlim(Mesh.xmin, Mesh.xmax)
 		plt.ylim(Mesh.ymin, Mesh.ymax)
 		if body != None:
-			plt.plot(body.x, body.y, 'ko-', lw=1, markersize=4)
+			plt.plot(np.append(body.x, body.x[0]), np.append(body.y, body.y[0]), 'ko-', lw=1, markersize=4)
 			for k in xrange(body.N):
 				plt.plot(Mesh.x[body.neighbor[k]%Mesh.Nx], Mesh.y[body.neighbor[k]/Mesh.Nx],\
 						'ro', markersize=4)

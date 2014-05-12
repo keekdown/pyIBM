@@ -38,7 +38,7 @@ def plot_pressure(p, body=None):
 	cbar.set_label('pressure')
 
 	if Mesh.is_body:
-		plt.plot(body.x, body.y, 'k', ls='-', lw=1)
+		plt.plot(np.append(body.x,body.x[0]), np.append(body.y, body.y[0]), 'k', ls='-', lw=1)
 
 	plt.xlim(Mesh.xmin, Mesh.xmax)
 	plt.ylim(Mesh.ymin, Mesh.ymax)
@@ -76,7 +76,7 @@ def plot_velocity(u, v, body=None):
 				   v.field.reshape(Mesh.Ny, Mesh.Nx))
 
 	if Mesh.is_body:
-		plt.plot(body.x, body.y, 'k', ls='-', lw=1)
+		plt.plot(np.append(body.x,body.x[0]), np.append(body.y, body.y[0]), 'k', ls='-', lw=1)
 
 	plt.xlim(Mesh.xmin, Mesh.xmax)
 	plt.ylim(Mesh.ymin, Mesh.ymax)
@@ -113,7 +113,7 @@ def plot_vorticity(u, v, body=None):
 	cbar.set_label('vorticity')
 
 	if Mesh.is_body:
-		plt.plot(body.x, body.y, 'k', ls='-', lw=1)
+		plt.plot(np.append(body.x,body.x[0]), np.append(body.y, body.y[0]), 'k', ls='-', lw=1)
 
 	plt.xlim(Mesh.xmin, Mesh.xmax)
 	plt.ylim(Mesh.ymin, Mesh.ymax)
