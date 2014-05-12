@@ -36,7 +36,6 @@ class Variable:
 		else:
 			self.field = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
 			self.read()
-		self.prev = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
 		self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
 	
 

@@ -97,8 +97,7 @@ def main(arg):
 	while Solver.ite < Solver.start + Solver.nt:
 		Solver.ite += 1
 		print '\nIteration ', Solver.ite, ' - Time = ', Solver.ite*Solver.dt
-		u.prev, v.prev, p.prev = u.field, v.field, p.field
-
+		
 		u.field[:] += Solver.dt*(\
 					+1./Solver.Re*lap(u)[:]\
 					-u.field[:]*grad(u, 'x')[:]\
