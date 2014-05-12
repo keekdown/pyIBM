@@ -122,8 +122,8 @@ def main(arg):
 		print '{Poisson} Number of iterations: ', poisson_p.ite
 		
 		# update velocity field
-		u.field[:] += -Solver.dt*grad(p, 'x')[:]
-		v.field[:] += -Solver.dt*grad(p, 'y')[:]
+		u.field[:] -= Solver.dt*grad(p, 'x')[:]
+		v.field[:] -= Solver.dt*grad(p, 'y')[:]
 		
 		# write variable fields
 		if Solver.ite%Solver.write_every == 0:
