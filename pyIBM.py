@@ -34,18 +34,18 @@ def main(arg):
 	tic = timeInfo.start()
 	mesh = Mesh(case_path+'/_infoMesh.yaml')
 	mesh.generate()
-	timeInfo.stop(tic,'Meshing')
+	timeInfo.stop(tic, 'Meshing')
 	print '{Writing mesh}'
 	mesh.write()
 
 	# create immersed boundary
 	body = None
-	if (Mesh.is_body):
+	if Mesh.is_body:
 		print '{Creating body}'
 		body = Body(case_path+'/_infoBody.yaml')
 
 	print '{Plotting mesh}'
-	mesh.plot(body,is_show=False)
+	mesh.plot(body, is_show=False)
 
 	# create solver
 	print '\n{Creating solver}'
@@ -56,33 +56,33 @@ def main(arg):
 	tic = timeInfo.start()
 	print 'u'
 	u = Variable('u')
-	u.assemble_matrix('laplacian',scheme='central')
-	u.assemble_matrix('gradient_x',scheme='central',direction='x')
-	u.assemble_matrix('gradient_y',scheme='central',direction='y')
+	u.assemble_matrix('laplacian', scheme='central')
+	u.assemble_matrix('gradient_x', scheme='central', direction='x')
+	u.assemble_matrix('gradient_y', scheme='central', direction='y')
 
 	print 'v'
 	v = Variable('v')
-	v.assemble_matrix('laplacian',scheme='central')
-	v.assemble_matrix('gradient_x',scheme='central',direction='x')
-	v.assemble_matrix('gradient_y',scheme='central',direction='y')
+	v.assemble_matrix('laplacian', scheme='central')
+	v.assemble_matrix('gradient_x', scheme='central', direction='x')
+	v.assemble_matrix('gradient_y', scheme='central', direction='y')
 	
 	print 'p'
 	p = Variable('p')
-	p.assemble_matrix('laplacian',scheme='central')
-	p.assemble_matrix('gradient_x',scheme='central',direction='x')
-	p.assemble_matrix('gradient_y',scheme='central',direction='y')
-	timeInfo.stop(tic,'Assembling matrices')
+	p.assemble_matrix('laplacian', scheme='central')
+	p.assemble_matrix('gradient_x', scheme='central', direction='x')
+	p.assemble_matrix('gradient_y', scheme='central', direction='y')
+	timeInfo.stop(tic, 'Assembling matrices')
 
 	# create Poisson solver
-	poisson_p = Poisson(p,case_path+'/_infoSolver.yaml')
+	poisson_p = Poisson(p, case_path+'/_infoSolver.yaml')
 
 	# initalization of the RHS of the Poisson equation
-	b = np.empty(Mesh.Nx*Mesh.Ny,dtype=float)
+	b = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
 
 	# time integration order --> depreciated
-	if (Solver.scheme == 'Euler'):
+	if Solver.scheme == 'Euler':
 		order=1
-	elif (Solver.scheme == 'RK3'):
+	elif Solver.scheme == 'RK3':
 		order=3
 	else:
 		order=1
@@ -91,48 +91,48 @@ def main(arg):
 	gamma = [1.,1./4,2./3]
 
 	# open file to store force coefficients
-	outfile = open(case_path+'/forceCoeffs.dat',('w' if Solver.start==0 else 'a'))
+	outfile = open(case_path+'/forceCoeffs.dat', ('w' if Solver.start == 0 else 'a'))
 
 	tic = timeInfo.start()
-	while(Solver.ite<Solver.start+Solver.nt):
+	while Solver.ite < Solver.start + Solver.nt:
 		Solver.ite += 1
-		print '\nIteration ',Solver.ite,' - Time = ',Solver.ite*Solver.dt
-		u.prev,v.prev,p.prev = u.field,v.field,p.field
+		print '\nIteration ', Solver.ite, ' - Time = ', Solver.ite*Solver.dt
+		u.prev, v.prev, p.prev = u.field, v.field, p.field
 
 		u.field[:] += Solver.dt*(\
 					+1./Solver.Re*lap(u)[:]\
-					-u.field[:]*grad(u,'x')[:]\
-					-v.field[:]*grad(u,'y')[:])
+					-u.field[:]*grad(u, 'x')[:]\
+					-v.field[:]*grad(u, 'y')[:])
 		v.field[:] += Solver.dt*(\
 					+1./Solver.Re*lap(v)[:]\
-					-u.field[:]*grad(v,'x')[:]\
-					-v.field[:]*grad(v,'y')[:])
+					-u.field[:]*grad(v, 'x')[:]\
+					-v.field[:]*grad(v, 'y')[:])
 		
 		# immersed boundary method
-		if (Mesh.is_body):
-			ibm(body,u,v)
+		if Mesh.is_body:
+			ibm(body, u, v)
 			outfile.write(str(Solver.ite*Solver.dt)+'\t'\
 						+str(body.cl)+'\t'+str(body.cd)+'\n')
 			print '{Body} \t Cl = %.3f \t Cd = %.3f' % (body.cl,body.cd)
 		
 		# solve the Poisson equation for pressure
-		b[:] = 1./Solver.dt*(grad(u,'x')[:]+grad(v,'y')[:])
-		p.field = poisson_p.solve(p.laplacian.mat,b-p.laplacian.bc_vect,p.field)
+		b[:] = 1./Solver.dt*(grad(u, 'x')[:]+grad(v, 'y')[:])
+		p.field = poisson_p.solve(p.laplacian.mat, b-p.laplacian.bc_vect, p.field)
 		
-		print '{Poisson} Number of iterations: ',poisson_p.ite
+		print '{Poisson} Number of iterations: ', poisson_p.ite
 		
 		# update velocity field
-		u.field[:] += -Solver.dt*grad(p,'x')[:]
-		v.field[:] += -Solver.dt*grad(p,'y')[:]
+		u.field[:] += -Solver.dt*grad(p, 'x')[:]
+		v.field[:] += -Solver.dt*grad(p, 'y')[:]
 		
 		# write variable fields
-		if (Solver.ite%Solver.write_every==0):
+		if Solver.ite%Solver.write_every == 0:
 			print '\n{Writing results}'
 			u.write()
 			v.write()
 			p.write()
 
-	timeInfo.stop(tic,'DONE')
+	timeInfo.stop(tic, 'DONE')
 	outfile.close()
 
 if (__name__=='__main__'):
