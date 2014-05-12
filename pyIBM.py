@@ -39,13 +39,12 @@ def main(arg):
 	mesh.write()
 
 	# create immersed boundary
-	body = None
 	if Mesh.is_body:
 		print '{Creating body}'
 		body = Body(case_path+'/_infoBody.yaml')
 
 	print '{Plotting mesh}'
-	mesh.plot(body, is_show=False)
+	mesh.plot(body if Mesh.is_body else None, is_show=False)
 
 	# create solver
 	print '\n{Creating solver}'
@@ -78,17 +77,6 @@ def main(arg):
 
 	# initalization of the RHS of the Poisson equation
 	b = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
-
-	# time integration order --> depreciated
-	if Solver.scheme == 'Euler':
-		order=1
-	elif Solver.scheme == 'RK3':
-		order=3
-	else:
-		order=1
-	alpha = [1.,3./4,1./3]
-	beta = [0.,1./4,2./3]
-	gamma = [1.,1./4,2./3]
 
 	# open file to store force coefficients
 	outfile = open(case_path+'/forceCoeffs.dat', ('w' if Solver.start == 0 else 'a'))

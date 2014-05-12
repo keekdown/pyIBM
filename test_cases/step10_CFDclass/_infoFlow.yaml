@@ -1,7 +1,0 @@
-p:
-  initialCondition: 0.0
-  boundaryCondition:
-    left: [dirichlet,0.0]
-    right: [dirichlet,0.0]
-    bottom: [dirichlet,0.0]
-    top: [dirichlet,0.0]

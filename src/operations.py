@@ -5,9 +5,9 @@
 def grad(u, direction):
 	'''Compute the gradient of 'u' in a a given direction.'''
 
-	if direction=='x':
+	if direction == 'x':
 		return u.gradient_x.mat.dot(u.field) + u.gradient_x.bc_vect
-	elif direction=='y':
+	elif direction == 'y':
 		return u.gradient_y.mat.dot(u.field) + u.gradient_y.bc_vect
 
 def lap(u):

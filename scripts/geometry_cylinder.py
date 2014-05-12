@@ -14,7 +14,7 @@ def main(arg):
 	case_path = pwd+'/'+case_name
 
 	xmin, xmax = -5.0, 10.0
-	Nx, Ny = 120, 120
+	Nx, Ny = 200, 200
 
 	R = 0.5
 	x_center, y_center = 0.0, 0.0
