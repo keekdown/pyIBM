@@ -147,13 +147,13 @@ def main(arg):
 	print variables	
 
 	if 'pressure' in variables:
-		p = Variable('p')
+		p = Variable('p', skip_assemble=True)
 	if 'velocity' in variables or 'vorticity' in variables:
-		u = Variable('u')
-		v = Variable('v')
+		u = Variable('u', skip_assemble=True)
+		v = Variable('v', skip_assemble=True)
 		if 'vorticity' in variables:
-			u.assemble_matrix('gradient_y', scheme='central', direction='y')
-			v.assemble_matrix('gradient_x', scheme='central', direction='x')
+			u.assemble_matrix('gradienty', scheme='central', direction='y')
+			v.assemble_matrix('gradientx', scheme='central', direction='x')
 
 	if not os.path.isdir(Case.path+'/images'):
 		os.system('mkdir '+Case.path+'/images')

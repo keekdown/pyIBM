@@ -1,0 +1,29 @@
+u:
+  - type: gradient
+    direction: x
+    scheme: central
+  - type: gradient
+    direction: y
+    scheme: central
+  - type: laplacian
+    scheme: central
+
+v:
+  - type: gradient
+    direction: x
+    scheme: central
+  - type: gradient
+    direction: y
+    scheme: central
+  - type: laplacian
+    scheme: central
+
+p:
+  - type: gradient
+    direction: x
+    scheme: central
+  - type: gradient
+    direction: y
+    scheme: central
+  - type: laplacian
+    scheme: central

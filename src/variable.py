@@ -26,24 +26,39 @@ class BoundaryConditions:
 class Variable:
 	'''Create a variable.'''
 
-	def __init__(self, name):
+	def __init__(self, name, skip_assemble=False):
 		self.name = name
 		infile = open(Case.path+'/_infoFlow.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()
+		
+		# initial conditions
 		if Solver.start == 0:
 			self.field = info[self.name]['initialCondition']\
 						* np.ones(Mesh.Nx*Mesh.Ny, dtype=float)
 		else:
 			self.field = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
 			self.read()
+
+		# boundary condition
 		self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
 	
+		# assemble matrices
+		if not skip_assemble:
+			infile = open(Case.path+'/_infoScheme.yaml', 'r')
+			info = yaml.load(infile)
+			infile.close()
+			for d in info[self.name]:
+				if 'direction' not in d:
+					d['direction'] = ''
+				self.assemble_matrix(name=''.join([d['type'], d['direction']]), \
+									 scheme=d['scheme'], direction=d['direction'])
 
-	def assemble_matrix(self, mat_name, scheme='central', direction=None):
+
+	def assemble_matrix(self, name, scheme, direction):
 		'''Assemble a matrix related to a variable.'''
 
-		setattr(self, mat_name, Matrix(self.bc, mat_name, scheme, direction))
+		setattr(self, name, Matrix(self.bc, name, scheme, direction))
 
 
 	def read(self):

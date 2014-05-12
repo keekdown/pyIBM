@@ -48,23 +48,9 @@ def main(arg):
 	# create variables and related matrices
 	print '\n{Assembling matrices}'
 	tic = timeInfo.start()
-	print 'u'
 	u = Variable('u')
-	u.assemble_matrix('laplacian', scheme='central')
-	u.assemble_matrix('gradient_x', scheme='central', direction='x')
-	u.assemble_matrix('gradient_y', scheme='central', direction='y')
-
-	print 'v'
 	v = Variable('v')
-	v.assemble_matrix('laplacian', scheme='central')
-	v.assemble_matrix('gradient_x', scheme='central', direction='x')
-	v.assemble_matrix('gradient_y', scheme='central', direction='y')
-	
-	print 'p'
 	p = Variable('p')
-	p.assemble_matrix('laplacian', scheme='central')
-	p.assemble_matrix('gradient_x', scheme='central', direction='x')
-	p.assemble_matrix('gradient_y', scheme='central', direction='y')
 	timeInfo.stop(tic, 'Assembling matrices')
 
 	# create Poisson solver
