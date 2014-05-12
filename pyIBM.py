@@ -135,7 +135,7 @@ def main(arg):
 	timeInfo.stop(tic, 'DONE')
 	outfile.close()
 
-if (__name__=='__main__'):
+if __name__ == '__main__':
 	print '\n\t----- pyIBM - START -----\n'
 	main(sys.argv)
 	print '\n\t----- pyIBM - END -----\n'
