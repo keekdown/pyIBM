@@ -78,9 +78,8 @@ class Matrix:
 					A.append([i, i+p, 0.5/d[I]])
 		val, row, col = [x[2] for x in A], [x[0] for x in A], [x[1] for x in A]
 		
-		return csr_matrix((val, (row, col)), shape=(Nx*Ny,Nx*Ny), dtype=float), B
+		return csr_matrix((val, (row, col)), shape=(Nx*Ny, Nx*Ny), dtype=float), B
 
-	
 	def set_laplacian(self, direction=None, scheme='central'):
 		'''Create Laplacian matrix,
 		using central difference scheme.
@@ -139,4 +138,4 @@ class Matrix:
 				A.append([i, i, -2./dy[J-1]/dy[J]])
 				A.append([i, i+Nx, 2./dy[J]/(dy[J-1]+dy[J])])
 		val, row, col = [x[2] for x in A], [x[0] for x in A], [x[1] for x in A]
-		return csr_matrix((val, (row, col)), shape=(Nx*Ny,Nx*Ny), dtype=float), B
+		return csr_matrix((val, (row, col)), shape=(Nx*Ny, Nx*Ny), dtype=float), B
