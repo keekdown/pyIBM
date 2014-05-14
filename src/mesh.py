@@ -12,50 +12,100 @@ import yaml
 from case import Case
 
 class Subdomain:
+	'''A direction (instance of Direction) contains
+	one or several subdomains (instance of Subdomain).
+	'''
 	def __init__(self, info_subdomain):
+		
 		self.end = info_subdomain['end']
-		self.N = info_subdomain['cells']
-		self.gamma = info_subdomain['stretchRatio']
+		if 'cells' in info_subdomain:
+			self.N = info_subdomain['cells']
+			self.is_uniform = True
+		if 'stretchRatio' in info_subdomain:
+			self.gamma = info_subdomain['stretchRatio']
+			self.is_uniform = False
+
 
 class Direction:
+	''' A mesh (instance of Mesh) contains
+	one or several directions (instance of Direction),
+	depending on the dimension of the problem (1D, 2D, 3D).
+	'''
 	def __init__(self, info_direction):
+		
 		self.name = info_direction['direction']
 		self.start = info_direction['start']
 		self.end = info_direction['subdomains'][-1]['end']
+		
 		self.subdomain = []
-		for i in xrange(len(info_direction['subdomains'])):
-			self.subdomain.append(Subdomain(info_direction['subdomains'][i]))
-		self.N = sum(self.subdomain[i].N for i in xrange(len(self.subdomain)))
+		for info in info_direction['subdomains']:
+			self.subdomain.append(Subdomain(info))
 
 	def generate(self):
-		# WARNING: only work for uniform mesh
-		# Adaptation to stretched mesh will be done later
-		self.coord = np.empty(self.N, dtype=float)
+		'''Generate a 1D mesh, corresponding to one direction.
+		Can handle uniform and stretched grid.
+		Compute the coordinate and the space grid for each point
+		in one direction.
+		'''
+		for idx, sd in enumerate(self.subdomain):
+			if sd.is_uniform:
+				idx_uniform = idx
+				if idx != 0:
+					start = self.subdomain[idx-1].end
+				else:
+					start = self.start
+				h = (sd.end-start)/(sd.N-1)
+				coord = list(start + h*np.arange(sd.N))
+		
+		for idx, sd in enumerate(self.subdomain):
+			if not sd.is_uniform:
+				if idx < idx_uniform:
+					while True:
+						x = coord[0] + sd.gamma*(coord[0]-coord[1])
+						if x-self.start > coord[1]-coord[0]:
+							coord.insert(0,x)
+						else:
+							coord.insert(0,self.start)
+							break
+				if idx > idx_uniform:
+					while True:
+						x = coord[-1] + sd.gamma*(coord[-1]-coord[-2])
+						if self.end-x > coord[-1]-coord[-2]:
+							coord.append(x)
+						else:
+							coord.append(self.end)
+							break
+		self.coord = np.array(coord)
+		self.N = len(self.coord)
 		self.delta = np.empty(self.N, dtype=float)
-		h = (self.end-self.start)/(self.N-1)
-		for i in xrange(self.N):
-			self.delta[i] = h
-			self.coord[i] = self.start + i*h
+		self.delta[0:self.N-1] = self.coord[1:self.N] - self.coord[0:self.N-1]
+		self.delta[self.N-1] = self.delta[self.N-2]
 
 
 class Mesh:
+	'''Generate the Cartesian mesh parsing a yaml file _infoMesh.yaml,
+	that is in the case folder.
+	'''
 	def __init__(self):
 		Mesh.is_body = False
+		
 		infile = open(Case.path+'/_infoMesh.yaml', 'r')
-		info = yaml.load(infile)
+		info_mesh = yaml.load(infile)
 		infile.close()
+		
 		Mesh.direction = []
-		for i in xrange(len(info)):
-			if 'direction' in info[i]:
-				Mesh.direction.append(Direction(info[i]))
-			elif 'body' in info[i]:
+		for info in info_mesh:
+			if 'direction' in info:
+				Mesh.direction.append(Direction(info))
+			elif 'body' in info:
 				Mesh.is_body = True
+		
+		self.generate()
+		
 		Mesh.xmin, Mesh.xmax = Mesh.direction[0].start, Mesh.direction[0].end
 		Mesh.ymin, Mesh.ymax = Mesh.direction[1].start, Mesh.direction[1].end
-		Mesh.Nx = Mesh.direction[0].N
-		Mesh.Ny = Mesh.direction[1].N
-
-		self.generate()
+		Mesh.Nx, Mesh.Ny = Mesh.direction[0].N, Mesh.direction[1].N
+		
 		self.write()
 
 		print '\n'
@@ -64,10 +114,13 @@ class Mesh:
 		print '\n'
 
 	def generate(self):
-		for d in Mesh.direction:
-			d.generate()
+		'''Create a mesh by generating an array in each direction.'''
+		
+		for direction in Mesh.direction:
+			direction.generate()
+		
 		Mesh.x, Mesh.y = Mesh.direction[0].coord,Mesh.direction[1].coord
-		Mesh.dx, Mesh.dy = Mesh.direction[1].delta,Mesh.direction[1].delta
+		Mesh.dx, Mesh.dy = Mesh.direction[0].delta,Mesh.direction[1].delta
 
 	def write(self):
 		outfile = open(Case.path+'/mesh.dat', 'w')

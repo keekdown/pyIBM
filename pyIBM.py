@@ -39,7 +39,11 @@ def main(arg):
 		body = Body()
 
 	print '\n{Plotting mesh}'
-	mesh.plot(body if Mesh.is_body else None, is_show=False)
+	if '--mesh' in arg:
+		mesh.plot(body if Mesh.is_body else None, is_show=True)
+		sys.exit(0)
+	else:
+		mesh.plot(body if Mesh.is_body else None, is_show=False)
 
 	# create solver
 	print '\n{Creating solver}'
