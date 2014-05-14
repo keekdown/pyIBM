@@ -16,14 +16,9 @@ class Matrix:
 
 	def __init__(self, bc, name, scheme, direction):
 		self.bc = bc
-		#self.mat, self.bc_vect = getattr(self, 'set_'+name)(scheme, direction)
-		if 'laplacian' in name:
-			self.mat, self.bc_vect = self.set_laplacian()
-		elif 'gradient' in name:
-			self.mat, self.bc_vect = self.set_gradient(scheme, direction)
-		
+		self.mat, self.bc_vect = getattr(self, 'set_'+name)(direction, scheme)
 	
-	def set_gradient(self, scheme, direction):
+	def set_gradient(self, direction, scheme='central'):
 		'''Create gradient matrix,
 		given a scheme and a direction.
 		'''
@@ -86,7 +81,7 @@ class Matrix:
 		return csr_matrix((val, (row, col)), shape=(Nx*Ny,Nx*Ny), dtype=float), B
 
 	
-	def set_laplacian(self):
+	def set_laplacian(self, direction=None, scheme='central'):
 		'''Create Laplacian matrix,
 		using central difference scheme.
 		'''

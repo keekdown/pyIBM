@@ -51,7 +51,7 @@ class Variable:
 			for d in info[self.name]:
 				if 'direction' not in d:
 					d['direction'] = ''
-				self.assemble_matrix(name=d['type']+d['direction'],
+				self.assemble_matrix(name=d['type'],
 									 scheme=d['scheme'], 
 									 direction=d['direction'])
 
@@ -59,7 +59,8 @@ class Variable:
 	def assemble_matrix(self, name, scheme, direction):
 		'''Assemble a matrix related to a variable.'''
 
-		setattr(self, name, Matrix(self.bc, name, scheme, direction))
+		setattr(self, name+direction, 
+				Matrix(self.bc, name, scheme, direction))
 
 
 	def read(self):
