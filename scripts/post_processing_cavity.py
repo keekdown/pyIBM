@@ -4,6 +4,7 @@
 
 import os
 import sys
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,26 +14,37 @@ from mesh import *
 from solver import *
 from variable import *
 
-def main(arg):
+def main():
 	'''Plot velocity at center lines,
 	with comparison Ghia et al. (1982) experimental data.
 	'''
-	Case(arg[1])
+	parser = argparse.ArgumentParser(description='Plots velocity at the centerline in both horizontal and vertical directions of the cavity')
+	parser.add_argument('-p', '--path', dest='path', \
+						help='path of the case folder', type=str)
+	args = parser.parse_args()
 
+	# creates the case
+	Case(args.path)
+
+	# generates the mesh
 	mesh = Mesh()
 
+	# initializes the solver
 	Solver()
 
+	# creates the velocity variables
 	u = Variable('u')
 	v = Variable('v')
 	p = Variable('p')
 
+	# reads variables' field at last iteration saved
 	print '{Post-processing}: Comparison with Ghia et al. (1982)'
 	Solver.ite = Solver.start + Solver.nt
 	u.read()
 	v.read()
 	p.read()
 	
+	# computes velocity on the centered vertical line of the cavity
 	infile = open(os.getcwd()+'/resources/ghia_et_al_1982/u_vertical_line.dat', 'r')
 	y_vl_ghia, u_vl_ghia = [], []
 	index, row = 0, 0
@@ -48,6 +60,7 @@ def main(arg):
 			u_vl_ghia.append(float(data[row]))
 	infile.close()
 	
+	# computes velocity on the centered horizontal line of the cavity
 	infile = open(os.getcwd()+'/resources/ghia_et_al_1982/v_horizontal_line.dat', 'r')
 	x_hl_ghia, v_hl_ghia = [], []
 	index, row = 0, 0
@@ -63,7 +76,7 @@ def main(arg):
 			v_hl_ghia.append(float(data[row]))
 	infile.close()
 
-
+	# creates the spatial arrays
 	y_vl = np.empty(Mesh.Ny, dtype=float)
 	u_vl = np.empty(Mesh.Ny, dtype=float)
 	x_hl = np.empty(Mesh.Nx, dtype=float)
@@ -79,6 +92,7 @@ def main(arg):
 			v_hl[J] = v.field[i]
 			J += 1
 
+	# creates the figure of the vertical line
 	plt.figure(num=None)
 	plt.grid(True)
 	plt.xlabel(r'$y$', fontsize=20)
@@ -90,6 +104,7 @@ def main(arg):
 	plt.clf()
 	plt.close()
 
+	# creates the figure of the horizontal line
 	plt.figure(num=None)
 	plt.grid(True)
 	plt.xlabel(r'$x$', fontsize=20)
@@ -103,5 +118,5 @@ def main(arg):
 
 if __name__ == '__main__':
 	print '\n\t----- pyIBM - Cavity flow - Post-processing -----\n'
-	main(sys.argv)
+	main()
 	print '\n\t----- pyIBM - END -----\n'
