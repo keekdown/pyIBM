@@ -16,6 +16,7 @@ class Matrix:
 
 	def __init__(self, bc, name, scheme, direction):
 		self.bc = bc
+		#self.mat, self.bc_vect = getattr(self, 'set_'+name)(scheme, direction)
 		if 'laplacian' in name:
 			self.mat, self.bc_vect = self.set_laplacian()
 		elif 'gradient' in name:

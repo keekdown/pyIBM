@@ -25,7 +25,7 @@ import timeInfo as timeInfo
 
 def main(arg):
 
-	Case(arg[1])
+	Case(arg[0])
 
 	# create mesh
 	print '\n{Meshing}'
@@ -66,21 +66,22 @@ def main(arg):
 	# open file to store force coefficients
 	outfile = open(Case.path+'/forceCoeffs.dat', ('w' if Solver.start == 0 else 'a'))
 
+	# time loop
 	tic = timeInfo.start()
 	while Solver.ite < Solver.start + Solver.nt:
 		Solver.ite += 1
 		print '\nIteration ', Solver.ite, ' - Time = ', Solver.ite*Solver.dt
-		
-		u.field[:] += Solver.dt*(\
-					+1./Solver.Re*lap(u)[:]\
-					-u.field[:]*grad(u, 'x')[:]\
+		# updates velocity field without the pressure
+		u.field[:] += Solver.dt*(
+					+1./Solver.Re*lap(u)[:]
+					-u.field[:]*grad(u, 'x')[:]
 					-v.field[:]*grad(u, 'y')[:])
-		v.field[:] += Solver.dt*(\
-					+1./Solver.Re*lap(v)[:]\
-					-u.field[:]*grad(v, 'x')[:]\
+		v.field[:] += Solver.dt*(
+					+1./Solver.Re*lap(v)[:]
+					-u.field[:]*grad(v, 'x')[:]
 					-v.field[:]*grad(v, 'y')[:])
 		
-		# immersed boundary method
+		# solves immersed boundary method
 		if Mesh.is_body:
 			ibm(body, u, v)
 			outfile.write(str(Solver.ite*Solver.dt)+'\t'\
@@ -109,5 +110,5 @@ def main(arg):
 
 if __name__ == '__main__':
 	print '\n\t----- pyIBM - START -----\n'
-	main(sys.argv)
+	main(sys.argv[1::])
 	print '\n\t----- pyIBM - END -----\n'

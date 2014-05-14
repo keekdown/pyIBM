@@ -51,8 +51,9 @@ class Variable:
 			for d in info[self.name]:
 				if 'direction' not in d:
 					d['direction'] = ''
-				self.assemble_matrix(name=''.join([d['type'], d['direction']]), \
-									 scheme=d['scheme'], direction=d['direction'])
+				self.assemble_matrix(name=d['type']+d['direction'],
+									 scheme=d['scheme'], 
+									 direction=d['direction'])
 
 
 	def assemble_matrix(self, name, scheme, direction):
