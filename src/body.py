@@ -13,6 +13,9 @@ class Body:
 	'''Create an immersed boundary.'''
 
 	def __init__(self):
+		'''Parses the file _infoBody.yaml using PyYAML
+		and generates the immersed boundary.
+		'''
 		infile = open(Case.path+'/_infoBody.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()
@@ -23,31 +26,30 @@ class Body:
 		self.cl, self.cd = 0., 0.
 
 	def generate(self):
-		'''Generate the immersed boundary,
-		and initialize Lagrangian variables.
+		'''Generates the immersed boundary,
+		computes length vector and neighbor for each point,
+		and initializes Lagrangian variables.
 		'''
-		infile = open(Case.path+'/'+self.coord_file, 'r')
-		index, i = 0, 0
-		for line in infile:
-			data = line.split()
-			if index == 0:
-				self.N = int(data[0])
-				self.x = np.empty(self.N, dtype=float)
-				self.y = np.empty(self.N, dtype=float)
-				self.dx = np.empty(self.N, dtype=float)
-				self.dy = np.empty(self.N, dtype=float)
-				self.neighbor = np.empty(self.N, dtype=int)
-				index += 1
-			else:
-				self.x[i], self.y[i] = float(data[0]), float(data[1])
-				i += 1
-		infile.close()
+		# reads the coordinate file
+		coord = np.loadtxt(fname=Case.path+'/'+self.coord_file, 
+						   dtype=float)
+		self.N = coord.shape[0]
+		self.x, self.y = np.copy(coord[:,0]), np.copy(coord[:,1])
+		
+		# computes the length vector
+		self.dx = np.empty(self.N, dtype=float)
+		self.dy = np.empty(self.N, dtype=float)
 		self.dx[1:self.N] = self.x[1:self.N] - self.x[0:self.N-1]
 		self.dy[1:self.N] = self.y[1:self.N] - self.y[0:self.N-1]
 		self.dx[0] = self.x[0] - self.x[-1]
 		self.dy[0] = self.y[0] - self.y[-1]
+	
+		# calls function to find the neighbors
 		self.get_neighbors()
+		
 		print '\n-> Number of points on the body: ', self.N, '\n'
+	
+		# initializes other Lagrangian variables
 		self.u = np.empty(self.N, dtype=float)
 		self.v = np.empty(self.N, dtype=float)
 		self.fx = np.empty(self.N, dtype=float)
@@ -57,20 +59,23 @@ class Body:
 		self.x0, self.y0 = np.copy(self.x), np.copy(self.y)
 
 	def get_neighbors(self):
-		'''Find the closest Eulerian points,
-		for each Lagrangian point on the immersed boundary.
+		'''Finds the closest Eulerian point on the mesh grid,
+		for each Lagrangian point on the immersed boundary surface.
 		'''
-		for k in xrange(self.N):
+		self.neighbor = np.empty(self.N, dtype=int)
+		for k, (x, y) in enumerate(zip(self.x, self.y)):
 			for i in xrange(Mesh.Nx-1):
-				if Mesh.x[i] <= self.x[k] < Mesh.x[i+1]:
+				if Mesh.x[i] <= x < Mesh.x[i+1]:
 					I = i
+					break
 			for j in xrange(Mesh.Ny-1):
-				if Mesh.y[j] <= self.y[k] < Mesh.y[j+1]:
+				if Mesh.y[j] <= y < Mesh.y[j+1]:
 					J = j
-			self.neighbor[k] = J*Mesh.Nx+I
+					break
+			self.neighbor[k] = J*Mesh.Nx + I
 
 	def kinematics(self):
-		'''Define the kinematics of a moving immersed boundary.
+		'''Defines the kinematics of a moving immersed boundary.
 		This function needs to be adapted to a given problem/application.
 		'''
 		A = 1.0
