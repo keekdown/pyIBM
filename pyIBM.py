@@ -10,7 +10,7 @@ import os
 import sys
 import numpy as np
 
-sys.path.insert(0,'./src')
+sys.path.insert(0,os.getcwd()+'/src')
 from case import *
 from mesh import *
 from body import *
