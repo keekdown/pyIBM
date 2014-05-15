@@ -18,8 +18,9 @@ def main():
 	'''Plot velocity at center lines,
 	with comparison Ghia et al. (1982) experimental data.
 	'''
-	parser = argparse.ArgumentParser(description='Plots velocity at the centerline in both horizontal and vertical directions of the cavity')
-	parser.add_argument('-p', '--path', dest='path', \
+	parser = argparse.ArgumentParser(description='Plots velocity at the centerline 
+									 in both horizontal and vertical directions of the cavity')
+	parser.add_argument('-p', '--path', dest='path', 
 						help='path of the case folder', type=str)
 	args = parser.parse_args()
 

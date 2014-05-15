@@ -84,8 +84,8 @@ def main(arg):
 		# solves immersed boundary method
 		if Mesh.is_body:
 			ibm(body, u, v)
-			outfile.write(str(Solver.ite*Solver.dt)+'\t'\
-						+str(body.cl)+'\t'+str(body.cd)+'\n')
+			outfile.write(str(Solver.ite*Solver.dt)+'\t'
+						  +str(body.cl)+'\t'+str(body.cd)+'\n')
 			print '{Body} \t Cl = %.3f \t Cd = %.3f' % (body.cl,body.cd)
 		
 		# solve the Poisson equation for pressure

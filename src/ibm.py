@@ -21,24 +21,22 @@ def dh(r):
 	else:
 		return 0.0
 
-
 def interpolation(u, body):
 	'''Interpolate the velocity at the Lagrangian points,
 	using values of the Eulerian of the neighbors.
 	'''
 	uk = np.zeros(body.N, dtype=float)
 	for k in xrange(body.N):
-		h = Mesh.x[body.neighbor[k]%Mesh.Nx+1]\
-			- Mesh.x[body.neighbor[k]%Mesh.Nx]
+		h = ( Mesh.x[body.neighbor[k]%Mesh.Nx+1]
+			- Mesh.x[body.neighbor[k]%Mesh.Nx] )
 		for i in xrange(-2,3):
 			for j in xrange(-2,3):
 				I = body.neighbor[k]%Mesh.Nx+i
 				J = body.neighbor[k]/Mesh.Nx+j
-				uk[k] += u[J*Mesh.Nx+I]\
-						*dh((body.x[k]-Mesh.x[I])/h)\
-						*dh((body.y[k]-Mesh.y[J])/h)
+				uk[k] += ( u[J*Mesh.Nx+I]
+						 * dh((body.x[k]-Mesh.x[I])/h)
+						 * dh((body.y[k]-Mesh.y[J])/h) )
 	return uk
-
 
 def distribution(fk, body):
 	'''Spread the Lagrangian force
@@ -46,15 +44,15 @@ def distribution(fk, body):
 	'''
 	f = np.zeros(Mesh.Nx*Mesh.Ny, dtype=float)
 	for k in xrange(body.N):
-		h = Mesh.x[body.neighbor[k]%Mesh.Nx+1]\
-			- Mesh.x[body.neighbor[k]%Mesh.Nx]
+		h = (Mesh.x[body.neighbor[k]%Mesh.Nx+1]
+			- Mesh.x[body.neighbor[k]%Mesh.Nx])
 		for i in xrange(-2,3):
 			for j in xrange(-2,3):
 				I = body.neighbor[k]%Mesh.Nx+i
 				J = body.neighbor[k]/Mesh.Nx+j
-				f[J*Mesh.Nx+I] += fk[k]\
-								*dh((body.x[k]-Mesh.x[I])/h)\
-								*dh((body.y[k]-Mesh.y[J])/h)
+				f[J*Mesh.Nx+I] += ( fk[k]
+								  * dh((body.x[k]-Mesh.x[I])/h)
+								  * dh((body.y[k]-Mesh.y[J])/h) )
 	return f
 
 
@@ -76,12 +74,12 @@ def ibm(body, u, v):
 		body.fy[:] = (body.vd[:]-body.v[:])/Solver.dt
 
 		for k in xrange(body.N):
-			body.cd += -2.*body.fx[k]\
-					*Mesh.dx[body.neighbor[k]%Mesh.Nx]\
-					*Mesh.dy[body.neighbor[k]/Mesh.Nx]
-			body.cl += -2.*body.fy[k]\
-					*Mesh.dx[body.neighbor[k]%Mesh.Nx]\
-					*Mesh.dy[body.neighbor[k]/Mesh.Nx]
+			body.cd += ( -2.*body.fx[k]
+					   * Mesh.dx[body.neighbor[k]%Mesh.Nx]
+					   * Mesh.dy[body.neighbor[k]/Mesh.Nx] )
+			body.cl += ( -2.*body.fy[k]
+					   * Mesh.dx[body.neighbor[k]%Mesh.Nx]
+					   * Mesh.dy[body.neighbor[k]/Mesh.Nx] )
 
 		fx += distribution(body.fx, body)
 		fy += distribution(body.fy, body)

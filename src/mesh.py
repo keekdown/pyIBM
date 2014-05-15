@@ -167,7 +167,7 @@ class Mesh:
 		if body != None:
 			plt.plot(np.append(body.x, body.x[0]), np.append(body.y, body.y[0]), 'ko-', lw=1, markersize=4)
 			for k in xrange(body.N):
-				plt.plot(Mesh.x[body.neighbor[k]%Mesh.Nx], Mesh.y[body.neighbor[k]/Mesh.Nx],\
+				plt.plot(Mesh.x[body.neighbor[k]%Mesh.Nx], Mesh.y[body.neighbor[k]/Mesh.Nx],
 						'ro', markersize=4)
 			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny)+' / IB: '+str(body.N))
 			plt.savefig(Case.path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'_'+str(body.N)+'.png')

@@ -34,8 +34,8 @@ class Variable:
 		
 		# initial conditions
 		if Solver.start == 0:
-			self.field = info[self.name]['initialCondition']\
-						* np.ones(Mesh.Nx*Mesh.Ny, dtype=float)
+			self.field = ( info[self.name]['initialCondition']
+						 * np.ones(Mesh.Nx*Mesh.Ny, dtype=float) )
 		else:
 			self.field = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
 			self.read()

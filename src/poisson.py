@@ -32,8 +32,9 @@ class Poisson:
 		and store the number of iterations and residual.
 		'''
 		self.ite = 0
-		x, info = self.solver(A, b, xi,\
-							  tol=self.tol, maxiter=self.maxiter, M=self.M, callback=self.iteration)
+		x, info = self.solver(A, b, xi,
+							  tol=self.tol, maxiter=self.maxiter, 
+							  M=self.M, callback=self.iteration)
 		self.iterations.append(self.ite)
 		self.residuals.append(self.residual(A, x, b))
 		return x

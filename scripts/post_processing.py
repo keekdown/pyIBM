@@ -36,7 +36,7 @@ def plot_pressure(p, body=None, limits=None):
 		pmin, pmax = -0.5, 0.5
 	levels = np.linspace(pmin, pmax, nc)
 	
-	cont = plt.contourf(Mesh.x, Mesh.y, p.field.reshape(Mesh.Ny, Mesh.Nx),\
+	cont = plt.contourf(Mesh.x, Mesh.y, p.field.reshape(Mesh.Ny, Mesh.Nx),
 						levels, extend='both', cmap=cm.jet)
 	cbar = plt.colorbar(cont)
 	cbar.set_label('pressure')
@@ -76,13 +76,13 @@ def plot_velocity(u, v, body=None, limits=None):
 	umin, umax = 0., 1.
 	levels = np.linspace(umin, umax, nc)
 
-	cont = plt.contourf(Mesh.x, Mesh.y, magn.reshape(Mesh.Nx, Mesh.Ny),\
+	cont = plt.contourf(Mesh.x, Mesh.y, magn.reshape(Mesh.Nx, Mesh.Ny),
 						levels, extend='both', cmap=cm.jet)
 	cbar = plt.colorbar(cont)
 	cbar.set_label('velocity')
 
-	plt.streamplot(Mesh.x, Mesh.y,\
-				   u.field.reshape(Mesh.Ny, Mesh.Nx),\
+	plt.streamplot(Mesh.x, Mesh.y,
+				   u.field.reshape(Mesh.Ny, Mesh.Nx),
 				   v.field.reshape(Mesh.Ny, Mesh.Nx))
 
 	# plots body if there is one
@@ -125,7 +125,7 @@ def plot_vorticity(u, v, body=None, limits=None):
 		wmin, wmax = -1.0, 1.0
 	levels = np.linspace(wmin, wmax, nc)
 	
-	cont = plt.contourf(Mesh.x, Mesh.y, w.reshape(Mesh.Ny, Mesh.Nx),\
+	cont = plt.contourf(Mesh.x, Mesh.y, w.reshape(Mesh.Ny, Mesh.Nx),
 						levels, extend='both', cmap=cm.jet)
 	cbar = plt.colorbar(cont)
 	cbar.set_label('vorticity')
@@ -153,15 +153,15 @@ def main():
 
 	# list of command-line arguments
 	parser = argparse.ArgumentParser(description='Plots pressure, velocity and/or vorticity')
-	parser.add_argument('-p', '--path', dest='path', \
+	parser.add_argument('-p', '--path', dest='path', 
 						help='path of the case folder', type=str)
-	parser.add_argument('-v', '--variable', dest='variable', \
-						help='list of variables to plot (pressure, velocity, vorticity)', \
+	parser.add_argument('-v', '--variable', dest='variable', 
+						help='list of variables to plot (pressure, velocity, vorticity)', 
 						nargs='+', type=str, default=['pressure', 'velocity', 'vorticity'])
-	parser.add_argument('-z', '--zoom', dest='zoom', \
+	parser.add_argument('-z', '--zoom', dest='zoom', 
 						help='limits of the plot', nargs='+', type=float)
-	parser.add_argument('-t', '--time', dest='time', \
-						help='time-step to plot / List: (min, max, every) or specific time', \
+	parser.add_argument('-t', '--time', dest='time', 
+						help='time-step to plot / List: (min, max, every) or specific time', 
 						nargs='+', type=int)
 	args = parser.parse_args()
 

@@ -14,20 +14,21 @@ def main():
 	'''
 	
 	# list of command-line arguments
-	parser = argparse.ArgumentParser(description='Creates a cylinder with the same spatial distribution than the uniform grid where it will be immersed')
-	parser.add_argument('-p', '--path', dest='path', \
+	parser = argparse.ArgumentParser(description='Creates a cylinder with the same spatial 
+									 distribution than the uniform grid where it will be immersed')
+	parser.add_argument('-p', '--path', dest='path', 
 						help='path of the case folder', type=str)
-	parser.add_argument('-b', '--boundary', dest='boundary', \
-						help='boundaries of the uniform grid', \
+	parser.add_argument('-b', '--boundary', dest='boundary', 
+						help='boundaries of the uniform grid', 
 						nargs='+', type=float)
-	parser.add_argument('-n', '--n', dest='n', \
-						help='number of points in the x and y directions in the uniform region', \
+	parser.add_argument('-n', '--n', dest='n', 
+						help='number of points in the x and y directions in the uniform region', 
 						nargs='+', type=float)
-	parser.add_argument('-c', '--center', dest='center', \
-						help='center of the cylinder', \
+	parser.add_argument('-c', '--center', dest='center', 
+						help='center of the cylinder', 
 						nargs='+', type=float, default=[0, 0])
-	parser.add_argument('-r', '--radius', dest='radius', \
-						help='radius of the cylinder', \
+	parser.add_argument('-r', '--radius', dest='radius', 
+						help='radius of the cylinder', 
 						type=float, default=1.0)
 	args = parser.parse_args()
 
