@@ -12,8 +12,9 @@ from mesh import Mesh
 
 
 class Matrix:
-	'''Create a matrix.'''
-
+	'''Create a matrix (laplacian or gradient), given a scheme.
+	The direction (x or y) to compute the gradient matrix.
+	'''
 	def __init__(self, bc, name, scheme, direction):
 		self.bc = bc
 		self.mat, self.bc_vect = getattr(self, 'set_'+name)(direction, scheme)
