@@ -14,8 +14,7 @@ def main():
 	'''
 	
 	# list of command-line arguments
-	parser = argparse.ArgumentParser(description='Creates a cylinder with the same spatial 
-									 distribution than the uniform grid where it will be immersed')
+	parser = argparse.ArgumentParser(description='Creates a cylinder with the same spatial distribution than the uniform grid where it will be immersed')
 	parser.add_argument('-p', '--path', dest='path', 
 						help='path of the case folder', type=str)
 	parser.add_argument('-b', '--boundary', dest='boundary', 
@@ -55,7 +54,7 @@ def main():
 
 	# writes coordinates in a file in the case folder
 	outfile = open(case_path+'/cylinder.bdy', 'w')
-	outfile.write(str(N)+'\n')
+	#outfile.write(str(N)+'\n')
 	for k in xrange(N):
 		outfile.write(str(x[k])+'\t'+str(y[k])+'\n')
 	outfile.close()
