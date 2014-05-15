@@ -208,8 +208,8 @@ def main():
 		u = Variable('u', skip_assemble=True)
 		v = Variable('v', skip_assemble=True)
 		if 'vorticity' in variables:
-			u.assemble_matrix('gradienty', scheme='central', direction='y')
-			v.assemble_matrix('gradientx', scheme='central', direction='x')
+			u.assemble_matrix('gradient', scheme='central', direction='y')
+			v.assemble_matrix('gradient', scheme='central', direction='x')
 
 	# create an 'images' folder in case folder if necessary
 	if not os.path.isdir(Case.path+'/images'):
