@@ -13,14 +13,16 @@ from mesh import Mesh
 
 class Matrix:
 	'''Creates a matrix (laplacian or gradient), given a scheme.
-	The direction (x or y) to compute the gradient matrix.
+	Creates a 1D array that contains boundary conditions.
+	The direction ('x' or 'y') must be specified for the gradient.
 	'''
 	def __init__(self, bc, name, scheme, direction):
 		self.bc = bc
 		self.mat, self.bc_vect = getattr(self, 'set_'+name)(direction, scheme)
 	
 	def set_gradient(self, direction, scheme='central'):
-		'''Creates gradient matrix,
+		'''Creates gradient matrix
+		and a 1D array with the boundary conditions,
 		given a scheme and a direction.
 		'''
 		Nx, Ny = Mesh.Nx, Mesh.Ny
@@ -82,7 +84,8 @@ class Matrix:
 		return csr_matrix((val, (row, col)), shape=(Nx*Ny, Nx*Ny), dtype=float), B
 
 	def set_laplacian(self, direction=None, scheme='central'):
-		'''Creates Laplacian matrix,
+		'''Creates Laplacian matrix
+		and a 1D array with the boundary conditions,
 		using central difference scheme.
 		'''
 		Nx, Ny = Mesh.Nx, Mesh.Ny
