@@ -29,22 +29,13 @@ class Matrix:
 		A = []
 		B = np.zeros(Nx*Ny, dtype=float)
 
-		dct = {'x': [Mesh.Nx, Mesh.dx, self.bc.left, self.bc.right], 
-			   'y': [Mesh.Ny, Mesh.dy, self.bc.bottom, self.bc.top]}
+		dct = {'x': [Mesh.Nx, Mesh.dx, self.bc.left, self.bc.right, 1], 
+			   'y': [Mesh.Ny, Mesh.dy, self.bc.bottom, self.bc.top, Mesh.Nx]}
 		N = dct[direction][0]
 		d = dct[direction][1]
 		bc1, bc2 = dct[direction][2], dct[direction][3]
+		p = dct[direction][4]
 
-		if direction == 'x':
-			N = Nx
-			d = Mesh.dx
-			bc1, bc2 = self.bc.left, self.bc.right
-			p = 1
-		elif direction == 'y':
-			N = Ny
-			d = Mesh.dy
-			bc1, bc2 = self.bc.bottom, self.bc.top
-			p = Nx
 		if scheme == 'backward':
 			for i in xrange(Nx*Ny):
 				if direction == 'x':
