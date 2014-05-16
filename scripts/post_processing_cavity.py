@@ -18,8 +18,7 @@ def main():
 	'''Plot velocity at center lines,
 	with comparison Ghia et al. (1982) experimental data.
 	'''
-	parser = argparse.ArgumentParser(description='Plots velocity at the centerline 
-									 in both horizontal and vertical directions of the cavity')
+	parser = argparse.ArgumentParser(description='Plots velocity at the centerline in both horizontal and vertical directions of the cavity')
 	parser.add_argument('-p', '--path', dest='path', 
 						help='path of the case folder', type=str)
 	args = parser.parse_args()
@@ -46,37 +45,21 @@ def main():
 	p.read()
 	
 	# computes velocity on the centered vertical line of the cavity
-	infile = open(os.getcwd()+'/resources/ghia_et_al_1982/u_vertical_line.dat', 'r')
-	y_vl_ghia, u_vl_ghia = [], []
-	index, row = 0, 0
-	for line in infile:
-		data = line.split()
-		if index==0:
-			for i in xrange(1, len(data)):
-				if float(data[i]) == Solver.Re:
-					row = i
-				index += 1
-		else:
-			y_vl_ghia.append(float(data[0]))
-			u_vl_ghia.append(float(data[row]))
-	infile.close()
+	file_path = os.getcwd()+'/resources/ghia_et_al_1982/u_vertical_line.dat'
+	with open(file_path, 'r') as file_name:
+		data = np.genfromtxt(file_name, 
+							 dtype=float, names=True, unpack=True)
+		y_vl_ghia = data['y']
+		u_vl_ghia = data[str(Solver.Re)]
 	
 	# computes velocity on the centered horizontal line of the cavity
-	infile = open(os.getcwd()+'/resources/ghia_et_al_1982/v_horizontal_line.dat', 'r')
-	x_hl_ghia, v_hl_ghia = [], []
-	index, row = 0, 0
-	for line in infile:
-		data = line.split()
-		if index==0:
-			for i in xrange(1, len(data)):
-				if float(data[i]) == Solver.Re:
-					row=i
-				index += 1
-		else:
-			x_hl_ghia.append(float(data[0]))
-			v_hl_ghia.append(float(data[row]))
-	infile.close()
-
+	file_path = os.getcwd()+'/resources/ghia_et_al_1982/v_horizontal_line.dat'
+	with open(file_path, 'r') as file_name:
+		data = np.genfromtxt(file_name, 
+							 dtype=float, names=True, unpack=True)
+		x_hl_ghia = data['x']
+		v_hl_ghia = data[str(Solver.Re)]
+	
 	# creates the spatial arrays
 	y_vl = np.empty(Mesh.Ny, dtype=float)
 	u_vl = np.empty(Mesh.Ny, dtype=float)
