@@ -59,12 +59,17 @@ class Variable:
 		setattr(self, name+direction, 
 				Matrix(self.bc, name, scheme, direction))
 
-	def read(self):
-		'''Reads the variable field from a file.'''
-		self.field = np.loadtxt(fname=Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', dtype=float)
-
 	def write(self):
 		'''Writes the variable field into a file.'''
 		if not os.path.isdir(Case.path+'/'+str(Solver.ite)):
 			os.system('mkdir '+Case.path+'/'+str(Solver.ite))
-		np.savetxt(fname=Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', X=self.field, fmt='%.6f')
+		with open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'w') as file_name:
+			np.savetxt(file_name, self.field, 
+					   fmt='%.6f', delimiter='\t', 
+					   header='%s - %d ites' % (self.name, Solver.ite))
+	
+	def read(self):
+		'''Reads the variable field from a file.'''
+		with open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'r') as file_name:
+			self.field = np.loadtxt(file_name, 
+									dtype=float, delimiter='\t')

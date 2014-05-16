@@ -123,8 +123,7 @@ class Mesh:
 		with open(Case.path+'/mesh.dat', 'w') as file_name:
 			np.savetxt(file_name, [Mesh.x, Mesh.y, Mesh.dx, Mesh.dy], 
 					   fmt='%.6f', delimiter='\t', 
-					   header='Mesh (%s by %s)' 
-					   % (str(Mesh.Nx), str(Mesh.Ny)))
+					   header='Mesh (%d by %d)' % (Mesh.Nx, Mesh.Ny))
 
 	def read(self):
 		'''Reads the mesh from a data file.'''
