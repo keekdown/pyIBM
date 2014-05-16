@@ -25,10 +25,10 @@ def main():
 						nargs='+', type=float)
 	parser.add_argument('-c', '--center', dest='center', 
 						help='center of the cylinder', 
-						nargs='+', type=float, default=[0, 0])
+						nargs='+', type=float, default=[0., 0.])
 	parser.add_argument('-r', '--radius', dest='radius', 
 						help='radius of the cylinder', 
-						type=float, default=1.0)
+						type=float, default=0.5)
 	args = parser.parse_args()
 
 	# gets the path of the case
