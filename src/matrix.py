@@ -12,7 +12,7 @@ from mesh import Mesh
 
 
 class Matrix:
-	'''Create a matrix (laplacian or gradient), given a scheme.
+	'''Creates a matrix (laplacian or gradient), given a scheme.
 	The direction (x or y) to compute the gradient matrix.
 	'''
 	def __init__(self, bc, name, scheme, direction):
@@ -20,7 +20,7 @@ class Matrix:
 		self.mat, self.bc_vect = getattr(self, 'set_'+name)(direction, scheme)
 	
 	def set_gradient(self, direction, scheme='central'):
-		'''Create gradient matrix,
+		'''Creates gradient matrix,
 		given a scheme and a direction.
 		'''
 		Nx, Ny = Mesh.Nx, Mesh.Ny
@@ -82,7 +82,7 @@ class Matrix:
 		return csr_matrix((val, (row, col)), shape=(Nx*Ny, Nx*Ny), dtype=float), B
 
 	def set_laplacian(self, direction=None, scheme='central'):
-		'''Create Laplacian matrix,
+		'''Creates Laplacian matrix,
 		using central difference scheme.
 		'''
 		Nx, Ny = Mesh.Nx, Mesh.Ny
