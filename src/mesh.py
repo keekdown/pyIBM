@@ -121,15 +121,18 @@ class Mesh:
 	def write(self):
 		'''Writes the mesh into a data file.'''
 		with open(Case.path+'/mesh.dat', 'w') as file_name:
-			np.savetxt(file_name, [Mesh.x, Mesh.y, Mesh.dx, Mesh.dy], 
+			np.savetxt(file_name, np.c_[Mesh.x, Mesh.y, Mesh.dx, Mesh.dy], 
 					   fmt='%.6f', delimiter='\t', 
-					   header='Mesh (%d by %d)' % (Mesh.Nx, Mesh.Ny))
+					   header='Mesh (%d by %d): x, y, dx, dy' 
+					   % (Mesh.Nx, Mesh.Ny))
 
 	def read(self):
 		'''Reads the mesh from a data file.'''
 		with open(Case.path+'/mesh.dat', 'r') as file_name:
 			Mesh.x, Mesh.y, Mesh.dx, Mesh.dy = np.loadtxt(file_name, 
-											delimiter='\t', unpack=True)
+														  dtype=float, 
+														  delimiter='\t',
+														  unpack=True)
 			
 	def plot(self,body=None, is_show=False):
 		if not os.path.isdir(Case.path+'/images'):

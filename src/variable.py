@@ -64,7 +64,7 @@ class Variable:
 		if not os.path.isdir(Case.path+'/'+str(Solver.ite)):
 			os.system('mkdir '+Case.path+'/'+str(Solver.ite))
 		with open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'w') as file_name:
-			np.savetxt(file_name, self.field, 
+			np.savetxt(file_name, np.c_[self.field], 
 					   fmt='%.6f', delimiter='\t', 
 					   header='%s - %d ites' % (self.name, Solver.ite))
 	

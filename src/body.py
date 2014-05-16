@@ -31,10 +31,10 @@ class Body:
 		and initializes Lagrangian variables.
 		'''
 		# reads the coordinate file
-		coord = np.loadtxt(fname=Case.path+'/'+self.coord_file, 
-						   dtype=float)
-		self.N = coord.shape[0]
-		self.x, self.y = np.copy(coord[:,0]), np.copy(coord[:,1])
+		with open(Case.path+'/'+self.coord_file, 'r') as file_name:
+			self.x, self.y = np.loadtxt(file_name, dtype=float, 
+										delimiter='\t', unpack=True)
+		self.N = len(self.x)
 		
 		# computes the length vector
 		self.dx = np.empty(self.N, dtype=float)

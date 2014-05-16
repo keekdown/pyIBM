@@ -53,11 +53,10 @@ def main():
 		y[k] = y_center + R*sin(2*pi*k/N)
 
 	# writes coordinates in a file in the case folder
-	outfile = open(case_path+'/cylinder.bdy', 'w')
-	#outfile.write(str(N)+'\n')
-	for k in xrange(N):
-		outfile.write(str(x[k])+'\t'+str(y[k])+'\n')
-	outfile.close()
+	with open(case_path+'/cylinder.bdy', 'w') as file_name:
+		np.savetxt(file_name, np.c_[x, y], 
+				   fmt='%.6f', delimiter='\t', 
+				   header='Cylinder (%d points)' % N)
 
 if __name__ == '__main__':
 	print '\n\t----- pyIBM - START - cylinder geometry -----\n'
