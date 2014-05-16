@@ -28,6 +28,13 @@ class Matrix:
 		Nx, Ny = Mesh.Nx, Mesh.Ny
 		A = []
 		B = np.zeros(Nx*Ny, dtype=float)
+
+		dct = {'x': [Mesh.Nx, Mesh.dx, self.bc.left, self.bc.right], 
+			   'y': [Mesh.Ny, Mesh.dy, self.bc.bottom, self.bc.top]}
+		N = dct[direction][0]
+		d = dct[direction][1]
+		bc1, bc2 = dct[direction][2], dct[direction][3]
+
 		if direction == 'x':
 			N = Nx
 			d = Mesh.dx
