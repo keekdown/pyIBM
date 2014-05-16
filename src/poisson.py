@@ -9,12 +9,13 @@ import pyamg
 
 from case import Case
 
-class Poisson:
-	'''Create Poisson solvers.'''
 
+class Poisson:
+	'''Creates a solver to solve a Poisson equation.'''
 	solvers = {'cg':spla.cg, 'gmres':spla.gmres, 'bicg':spla.bicg}
 
 	def __init__(self, var):
+		'''Parses the file _infoSolver.'''
 		infile = open(Case.path+'/_infoSolver.yaml', 'r')
 		data = yaml.load(infile)
 		infile.close()
@@ -28,8 +29,8 @@ class Poisson:
 		self.iterations, self.residuals = [], []
 
 	def solve(self, A, b, xi):
-		'''Solve Poisson equation,
-		and store the number of iterations and residual.
+		'''Solves the Poisson equation,
+		and stores the number of iterations and the residual.
 		'''
 		self.ite = 0
 		x, info = self.solver(A, b, xi,
@@ -43,5 +44,6 @@ class Poisson:
 		self.ite += 1
 	
 	def residual(self, A, x, b):
+		'''Computes the residual using the L2-norm.'''
 		if np.linalg.norm(b) != 0:
 			return np.linalg.norm(A.dot(x)-b)/np.linalg.norm(b)
