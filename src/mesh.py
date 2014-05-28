@@ -13,10 +13,14 @@ from case import Case
 
 
 class Subdomain:
-	'''A direction (instance of Direction) contains
-	one or several subdomains (instance of Subdomain).
-	'''
-	def __init__(self, info_subdomain):		
+	"""A direction contains one or several subdomains."""
+	def __init__(self, info_subdomain):
+		"""Gets the number of cells or the stretching ratio.
+		
+		Arguments
+		---------
+		info_subdomain -- info about the subdomain.
+		"""
 		self.end = info_subdomain['end']
 		if 'cells' in info_subdomain:
 			self.N = info_subdomain['cells']
@@ -27,11 +31,14 @@ class Subdomain:
 
 
 class Direction:
-	''' A mesh (instance of Mesh) contains
-	one or several directions (instance of Direction),
-	depending on the dimension of the problem (1D, 2D, 3D).
-	'''
+	"""A mesh contains one or several directions."""
 	def __init__(self, info_direction):
+		"""Gets info about a direction and creates subdomains.
+		
+		Arguments
+		---------
+		info_direction -- info about the direction.
+		"""
 		self.name = info_direction['direction']
 		self.start = info_direction['start']
 		self.end = info_direction['subdomains'][-1]['end']
@@ -41,11 +48,7 @@ class Direction:
 			self.subdomain.append(Subdomain(info))
 
 	def generate(self):
-		'''Generates a 1D mesh, corresponding to one direction.
-		Can handle uniform and stretched grid.
-		Compute the coordinate and the space grid for each point
-		in one direction.
-		'''
+		"""Generates the mesh in one direction (coordinates and grid spacing)."""
 		for idx, sd in enumerate(self.subdomain):
 			if sd.is_uniform:
 				idx_uniform = idx
@@ -82,8 +85,9 @@ class Direction:
 
 
 class Mesh:
-	'''Generates the Cartesian mesh parsing the file _infoMesh.yaml.'''
+	"""Class to generate a Cartesian grid mesh."""
 	def __init__(self):
+		"""Parses the file _infoMesh.yaml and generates the mesh."""
 		Mesh.is_body = False
 		
 		infile = open(Case.path+'/_infoMesh.yaml', 'r')
@@ -111,7 +115,7 @@ class Mesh:
 		print '\n'
 
 	def generate(self):
-		'''Creates a mesh by generating an array in each direction.'''
+		"""Generates the mesh."""
 		for direction in Mesh.direction:
 			direction.generate()
 		
@@ -119,7 +123,7 @@ class Mesh:
 		Mesh.dx, Mesh.dy = Mesh.direction[0].delta,Mesh.direction[1].delta
 
 	def write(self):
-		'''Writes the mesh into a data file.'''
+		"""Writes the mesh into a data file."""
 		with open(Case.path+'/mesh.dat', 'w') as file_name:
 			np.savetxt(file_name, np.c_[Mesh.x, Mesh.y, Mesh.dx, Mesh.dy], 
 					   fmt='%.6f', delimiter='\t', 
@@ -127,7 +131,7 @@ class Mesh:
 					   % (Mesh.Nx, Mesh.Ny))
 
 	def read(self):
-		'''Reads the mesh from a data file.'''
+		"""Reads the mesh from a data file."""
 		with open(Case.path+'/mesh.dat', 'r') as file_name:
 			Mesh.x, Mesh.y, Mesh.dx, Mesh.dy = np.loadtxt(file_name, 
 														  dtype=float, 
@@ -135,6 +139,13 @@ class Mesh:
 														  unpack=True)
 			
 	def plot(self,body=None, is_show=False):
+		"""Plots the Cartesian mesh grid.
+		
+		Arguments
+		---------
+		body -- Body object immersed (default None).
+		is_show -- Boolean to display the mesh on the screen (default False).
+		"""
 		if not os.path.isdir(Case.path+'/images'):
 			os.system('mkdir '+Case.path+'/images')
 		plt.figure(num=None)

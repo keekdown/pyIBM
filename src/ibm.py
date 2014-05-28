@@ -10,9 +10,12 @@ from solver import Solver
 
 
 def dh(r):
-	'''Computes the delta function,
-	using the formulation from Roma et al. (1999).
-	'''
+	"""Computes the delta function (Roma et al., 1999).
+	
+	Arguments
+	---------
+	r -- distance between Eulerian point and Lagrangian point.
+	"""
 	r = abs(r)
 	if 0. <= r < 1.:
 		return 0.125*(3-2*r+sqrt(1+4*r-4*r**2))
@@ -22,9 +25,17 @@ def dh(r):
 		return 0.0
 
 def interpolation(u, body):
-	'''Interpolates the velocity at the Lagrangian points,
-	using values of the surrounding Eulerian points.
-	'''
+	"""Interpolates the velocity at the Lagrangian points.
+
+	Arguments
+	---------
+	u -- component of the Eulerian velocity field.
+	body -- Body object containing info about the immersed body.
+
+	Returns
+	-------
+	uk -- component of the Lagangian velocity.
+	"""
 	uk = np.zeros(body.N, dtype=float)
 	for k, (neighbor, x, y) in enumerate(zip(body.neighbor, body.x, body.y)):
 		h = ( Mesh.x[neighbor%Mesh.Nx+1]
@@ -39,9 +50,17 @@ def interpolation(u, body):
 	return uk
 
 def distribution(fk, body):
-	'''Distributes the Lagrangian forces
-	onto the Eulerian grid.
-	'''
+	"""Spreads the Lagrangian force onto the Eulerian mesh grid.
+
+	Arguments
+	---------
+	fk -- Lagrangian force.
+	body -- Body object containing info about the immersed body.
+
+	Returns
+	-------
+	f -- component of the Eulerian force field.
+	"""
 	f = np.zeros(Mesh.Nx*Mesh.Ny, dtype=float)
 
 	for neighbor, x, y, f_k in zip(body.neighbor, body.x, body.y, fk):
@@ -58,7 +77,13 @@ def distribution(fk, body):
 
 
 def ibm(body, u, v):
-	'''Immersed boundary method.'''
+	"""Immersed boundary method to update the Eulerian velocity field.
+	
+	Arguments
+	---------
+	body -- Body object containing info about the immersed body.
+	u, v -- Eulerian velocity field.
+	"""
 	fx = np.zeros(Mesh.Nx*Mesh.Ny, dtype=float)
 	fy = np.zeros(Mesh.Nx*Mesh.Ny, dtype=float)
 

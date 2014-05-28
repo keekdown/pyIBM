@@ -6,9 +6,15 @@ import time
 
 
 def start():
-	'''Starts the timer.'''
+	"""Returns the time."""
 	return time.time()
 
 def stop(tic, info=None):
-	'''Prints the time spent with a given info.'''
+	"""Stops timer and prints the time with a given info.
+	
+	Arguments
+	---------
+	tic -- previous time to get time spent.
+	info -- information to display (default None).
+	"""
 	print '{'+info+'} Execution time: %.3f s' % float(time.time()-tic)

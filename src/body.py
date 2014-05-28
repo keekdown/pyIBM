@@ -10,12 +10,9 @@ from mesh import Mesh
 from case import Case
 
 class Body:
-	'''Create an immersed boundary.'''
-
+	"""Creates an immersed boundary."""
 	def __init__(self):
-		'''Parses the file _infoBody.yaml using PyYAML
-		and generates the immersed boundary.
-		'''
+		"""Parses the file _infoBody.yaml and generates the immersed boundary."""
 		infile = open(Case.path+'/_infoBody.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()
@@ -26,10 +23,9 @@ class Body:
 		self.cl, self.cd = 0., 0.
 
 	def generate(self):
-		'''Generates the immersed boundary,
-		computes length vector and neighbor for each point,
+		"""Generates the immersed boundary, finds neighbors
 		and initializes Lagrangian variables.
-		'''
+		"""
 		# reads the coordinate file
 		with open(Case.path+'/'+self.coord_file, 'r') as file_name:
 			self.x, self.y = np.loadtxt(file_name, dtype=float, 
@@ -59,9 +55,7 @@ class Body:
 		self.x0, self.y0 = np.copy(self.x), np.copy(self.y)
 
 	def get_neighbors(self):
-		'''Finds the closest Eulerian point on the mesh grid,
-		for each Lagrangian point on the immersed boundary surface.
-		'''
+		"""Finds the closest Eulerian point on the mesh grid."""
 		self.neighbor = np.empty(self.N, dtype=int)
 		for k, (x, y) in enumerate(zip(self.x, self.y)):
 			for i in xrange(Mesh.Nx-1):
@@ -75,9 +69,7 @@ class Body:
 			self.neighbor[k] = J*Mesh.Nx + I
 
 	def kinematics(self):
-		'''Defines the kinematics of a moving immersed boundary.
-		This function needs to be adapted to a given problem/application.
-		'''
+		"""Defines the kinematics of a moving immersed boundary."""
 		A = 1.0
 		Nf = 100
 		f = 1./(Nf*Solver.dt)

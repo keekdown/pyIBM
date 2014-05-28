@@ -10,11 +10,9 @@ from case import Case
 
 
 class Solver:
-	'''Creates the solver by reading the solver file
-	in the case folder.
-	'''
+	"""Creates a solver."""
 	def __init__(self):
-		'''Parses the file _infoSolver.yaml to get solver info.'''
+		"""Parses the file _infoSolver.yaml to get solver info."""
 		infile = open(Case.path+'/_infoSolver.yaml', 'r')
 		info = yaml.load(infile)
 		infile.close()

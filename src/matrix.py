@@ -12,19 +12,28 @@ from mesh import Mesh
 
 
 class Matrix:
-	'''Creates a matrix (laplacian or gradient), given a scheme.
-	Creates a 1D array that contains boundary conditions.
-	The direction ('x' or 'y') must be specified for the gradient.
-	'''
+	"""Class to define a matrix."""
 	def __init__(self, bc, name, scheme, direction):
+		"""Creates a Laplacian or gradient matrix associated to a variable.
+
+		Arguments
+		---------
+		bc -- boundary conditions.
+		name -- name of the matrix.
+		scheme -- numerical scheme to differentiate the gradient or Laplacian.
+		direction -- gradient's direction.
+		"""
 		self.bc = bc
 		self.mat, self.bc_vect = getattr(self, 'set_'+name)(direction, scheme)
 	
 	def set_gradient(self, direction, scheme='central'):
-		'''Creates gradient matrix
-		and a 1D array with the boundary conditions,
-		given a scheme and a direction.
-		'''
+		"""Creates a gradient matrix and its boundary condition vector.
+		
+		Arguments
+		---------
+		direction -- gradient's direction.
+		scheme -- numerical scheme for discretization (default 'central')
+		"""
 		Nx, Ny = Mesh.Nx, Mesh.Ny
 		A = []
 		B = np.zeros(Nx*Ny, dtype=float)
@@ -82,10 +91,13 @@ class Matrix:
 		return csr_matrix((val, (row, col)), shape=(Nx*Ny, Nx*Ny), dtype=float), B
 
 	def set_laplacian(self, direction=None, scheme='central'):
-		'''Creates Laplacian matrix
-		and a 1D array with the boundary conditions,
-		using central difference scheme.
-		'''
+		"""Creates a Laplacian matrix and its boundary condition vector.
+		
+		Arguments
+		---------
+		direction -- None.
+		scheme -- numerical scheme for discretization (default 'central')
+		"""
 		Nx, Ny = Mesh.Nx, Mesh.Ny
 		dx, dy = Mesh.dx, Mesh.dy
 		bc = self.bc

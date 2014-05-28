@@ -6,7 +6,13 @@ import os
 
 
 class Case:
-	'''Define the name and the path of the case.'''
+	"""Sets up information about the case."""
 	def __init__(self,loc):
+		"""Gets the path and name of the case.
+		
+		Arguments
+		---------
+		loc -- location of the case folder (root is the path of pyIBM.py)
+		"""
 		Case.path = os.getcwd()+'/'+loc
 		Case.name = os.path.basename(os.path.normpath(Case.path))

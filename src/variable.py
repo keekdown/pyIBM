@@ -15,19 +15,30 @@ from matrix import *
 
 
 class BoundaryConditions:
-	'''Creates the boundary condition with the type and value.
-	Type of boundary condition: Dirichlet or Neummann.
-	'''
+	"""Boundary conditions related to a variable."""
 	def __init__(self, info_bc):
-		self.left = [info_bc['left'][0],info_bc['left'][1] * np.ones(Mesh.Ny, dtype=float)]
-		self.right = [info_bc['right'][0],info_bc['right'][1] * np.ones(Mesh.Ny, dtype=float)]
-		self.bottom = [info_bc['bottom'][0],info_bc['bottom'][1] * np.ones(Mesh.Nx, dtype=float)]
-		self.top = [info_bc['top'][0],info_bc['top'][1] * np.ones(Mesh.Nx, dtype=float)]
+		"""Creates a list for each boundary with the boundary type and the boundary value array.
+		
+		Arguments
+		---------
+		info_bc -- information related to boundary conditions of a variable.
+		"""
+		self.left = [info_bc['left'][0], info_bc['left'][1] * np.ones(Mesh.Ny, dtype=float)]
+		self.right = [info_bc['right'][0], info_bc['right'][1] * np.ones(Mesh.Ny, dtype=float)]
+		self.bottom = [info_bc['bottom'][0], info_bc['bottom'][1] * np.ones(Mesh.Nx, dtype=float)]
+		self.top = [info_bc['top'][0], info_bc['top'][1] * np.ones(Mesh.Nx, dtype=float)]
 
 
 class Variable:
-	'''Creates a variable.'''
+	"""Creates a variable."""
 	def __init__(self, name, skip_assemble=False):
+		"""Creates a variable parsing the file _infoFlow.yaml.
+
+		Arguments
+		---------
+		name -- variable's name.
+		skip_assemble -- boolean, if True, not assembling matrices related to the variable (default False).
+		"""
 		self.name = name
 		infile = open(Case.path+'/_infoFlow.yaml', 'r')
 		info = yaml.load(infile)
@@ -53,14 +64,19 @@ class Variable:
 									 direction=d['direction'])
 
 	def assemble_matrix(self, name, scheme, direction):
-		'''Assembles a matrix related to a variable,
-		calling the class Matrix.
-		'''
+		"""Assembles a matrix related to a variable, calling the class Matrix.
+		
+		Arguments
+		---------
+		name -- variable's name.
+		scheme -- numerical scheme for discretization.
+		direction -- gradient's direction.
+		"""
 		setattr(self, name+direction, 
 				Matrix(self.bc, name, scheme, direction))
 
 	def write(self):
-		'''Writes the variable field into a file.'''
+		"""Writes the variable field into a file."""
 		if not os.path.isdir(Case.path+'/'+str(Solver.ite)):
 			os.system('mkdir '+Case.path+'/'+str(Solver.ite))
 		with open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'w') as file_name:
@@ -69,7 +85,7 @@ class Variable:
 					   header='%s - %d ites' % (self.name, Solver.ite))
 	
 	def read(self):
-		'''Reads the variable field from a file.'''
+		"""Reads the variable field from a file."""
 		with open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'r') as file_name:
 			self.field = np.loadtxt(file_name, 
 									dtype=float, delimiter='\t')
