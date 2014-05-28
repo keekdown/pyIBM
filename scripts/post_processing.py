@@ -16,10 +16,16 @@ from solver import *
 from variable import *
 from operations import *
 
-def plot_pressure(p, body=None, limits=None):
-	'''Plot pressure field on the mesh.'''
 
-	# reads variable
+def plot_pressure(p, body=None, limits=None):
+	"""Plots pressure field on the mesh.
+	
+	Arguments
+	---------
+	p -- instance Variable for the pressure.
+	body -- immersed body (default None).
+	limits -- plot limits (default None).
+	"""
 	p.read()
 	
 	# initializes figure
@@ -57,9 +63,14 @@ def plot_pressure(p, body=None, limits=None):
 	plt.close()
 
 def plot_velocity(u, v, body=None, limits=None):
-	'''Plot velocity field on the mesh.'''
+	"""Plots velocity field on the mesh.
 	
-	# reads variables
+	Arguments
+	---------
+	u, v -- instances Variable for the velocity components.
+	body -- immersed body (default None).
+	limits -- plot limits (default None).
+	"""
 	u.read()
 	v.read()
 	
@@ -100,11 +111,15 @@ def plot_velocity(u, v, body=None, limits=None):
 	plt.clf()
 	plt.close()
 
-
 def plot_vorticity(u, v, body=None, limits=None):
-	'''Plot vorticity field on the mesh.'''
+	"""Plots vorticity field on the mesh.
 	
-	# reads the variables
+	Arguments
+	---------
+	u, v -- instances Variable for the velocity components.
+	body -- immersed body (default None).
+	limits -- plot limits (default None).
+	"""
 	u.read()
 	v.read()
 
@@ -147,10 +162,7 @@ def plot_vorticity(u, v, body=None, limits=None):
 
 
 def main():
-	'''Plot either pressure, velocity or vorticity,
-	at every time saved in the case folder.
-	'''
-
+	"""Script to plot pressure, velocity and/or vorticity."""
 	# list of command-line arguments
 	parser = argparse.ArgumentParser(description='Plots pressure, velocity and/or vorticity')
 	parser.add_argument('-p', '--path', dest='path', 

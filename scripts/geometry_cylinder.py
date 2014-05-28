@@ -9,10 +9,9 @@ from math import *
 import numpy as np
 
 def main():
-	'''Creates a cylinder with the same spatial distribution than
-	the uniform where it will be immersed.
-	'''
-	
+	"""Creates a cylinder with the same spatial distribution than
+	the uniform mesh where it will be immersed.
+	"""
 	# list of command-line arguments
 	parser = argparse.ArgumentParser(description='Creates a cylinder with the same spatial distribution than the uniform grid where it will be immersed')
 	parser.add_argument('-p', '--path', dest='path', 

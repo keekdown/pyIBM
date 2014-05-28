@@ -5,9 +5,9 @@
 import os
 import sys
 
-def main(arg):
-	'''Script to clean a given case.'''
 
+def main(arg):
+	"""Script to clean a given case."""
 	pwd = os.getcwd()
 	case_name = arg[1]
 	case_path = pwd+'/'+case_name+'/'
