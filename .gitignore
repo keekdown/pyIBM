@@ -1,1 +1,7 @@
+# ignore Python compiled files
 src/*.pyc
+
+# ignore examples
+cylinder*
+cavity*
+2d*
