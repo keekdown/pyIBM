@@ -13,6 +13,19 @@ from mesh import Mesh
 from solver import Solver
 from matrix import *
 
+class BoundaryCondition:
+	"""Defines a boundary condition by its type and values."""
+	def __init__(self, value, N):
+		"""Creates the boundary condition.
+		
+		Arguments
+		---------
+		value -- contains type and value at the boundary.
+		N -- number of points on the boundary.
+		"""
+		self.bc_type = value[0]
+		self.values = value[1] * np.ones(N, dtype=float)
+
 
 class BoundaryConditions:
 	"""Boundary conditions related to a variable."""
@@ -25,8 +38,7 @@ class BoundaryConditions:
 		"""
 		for location, value in bc_info.iteritems():
 			N = (Mesh.Nx if location in ['bottom', 'top'] else Mesh.Ny)
-			setattr(self, location, {'type': value[0], 
-								     'value': value[1]*np.ones(N, dtype=float)})
+			setattr(self, location, BoundaryCondition(value, N))
 
 
 class Variable:
