@@ -6,7 +6,6 @@ import os
 import sys
 
 import numpy as np
-from scipy.sparse import *
 import yaml
 
 from case import Case
