@@ -36,7 +36,7 @@ class BoundaryConditions:
 		---------
 		info_bc -- information related to boundary conditions of a variable.
 		"""
-		for location, value in bc_info.iteritems():
+		for location, value in info_bc.iteritems():
 			N = (Mesh.Nx if location in ['bottom', 'top'] else Mesh.Ny)
 			setattr(self, location, BoundaryCondition(value, N))
 
