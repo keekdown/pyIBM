@@ -4,6 +4,7 @@
 
 import os
 import sys
+
 import numpy as np
 from scipy.sparse import *
 import yaml
@@ -23,10 +24,10 @@ class BoundaryConditions:
 		---------
 		info_bc -- information related to boundary conditions of a variable.
 		"""
-		self.left = [info_bc['left'][0], info_bc['left'][1] * np.ones(Mesh.Ny, dtype=float)]
-		self.right = [info_bc['right'][0], info_bc['right'][1] * np.ones(Mesh.Ny, dtype=float)]
-		self.bottom = [info_bc['bottom'][0], info_bc['bottom'][1] * np.ones(Mesh.Nx, dtype=float)]
-		self.top = [info_bc['top'][0], info_bc['top'][1] * np.ones(Mesh.Nx, dtype=float)]
+		for location, value in bc_info.iteritems():
+			N = (Mesh.Nx if location in ['bottom', 'top'] else Mesh.Ny)
+			setattr(self, location, {'type': value[0], 
+								     'value': value[1]*np.ones(N, dtype=float)})
 
 
 class Variable:
@@ -40,28 +41,30 @@ class Variable:
 		skip_assemble -- boolean, if True, not assembling matrices related to the variable (default False).
 		"""
 		self.name = name
-		infile = open(Case.path+'/_infoFlow.yaml', 'r')
-		info = yaml.load(infile)
-		infile.close()	
+	
+		# parse flow file with yaml
+		with open(Case.path+'/_infoFlow.yaml', 'r') as infile:
+			info = yaml.load(infile)
+		
 		# get initial conditions or read a data file
 		if Solver.start == 0:
 			self.field = ( info[self.name]['initialCondition']
 						 * np.ones(Mesh.Nx*Mesh.Ny, dtype=float) )
 		else:
 			self.read()
+
 		# boundary conditions
 		self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
+		
 		# assemble matrices
 		if not skip_assemble:
-			infile = open(Case.path+'/_infoScheme.yaml', 'r')
-			info = yaml.load(infile)
-			infile.close()
+			# parse schem file using yaml
+			with open(Case.path+'/_infoScheme.yaml', 'r') as infile:
+				info = yaml.load(infile)
 			for d in info[self.name]:
-				if 'direction' not in d:
-					d['direction'] = ''
 				self.assemble_matrix(name=d['type'],
 									 scheme=d['scheme'], 
-									 direction=d['direction'])
+									 direction=(d['direction'] if 'direction' in d else ''))
 
 	def assemble_matrix(self, name, scheme, direction):
 		"""Assembles a matrix related to a variable, calling the class Matrix.
