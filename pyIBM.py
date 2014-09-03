@@ -11,104 +11,43 @@ import sys
 import numpy as np
 
 sys.path.insert(0,os.getcwd()+'/src')
-from case import *
-from mesh import *
-from body import *
-from solver import *
-from variable import *
-from matrix import *
-from operations import *
-from ibm import *
-from poisson import *
+from case import Case
+from mesh import Mesh
+from body import Body
+from solver import Solver
+from variable import Variable
+from matrix import Matrix
+from operations import grad, lap
+from ibm import ibm
+from poisson import Poisson
 
-import timeInfo as timeInfo
+import time_info
 
 def main(arg):
 
 	Case(arg[0])
 
-	# create mesh
-	print '\n{Meshing}'
-	tic = timeInfo.start()
+	# generate the mesh
 	mesh = Mesh()
-	timeInfo.stop(tic, 'Meshing')
 
-	# create immersed boundary
+	# generate the immersed boundary
 	if Mesh.is_body:
-		print '\n{Creating body}'
 		body = Body()
 
-	print '\n{Plotting mesh}'
 	if '--mesh' in arg:
 		mesh.plot(body if Mesh.is_body else None, is_show=True)
 		sys.exit(0)
 	else:
 		mesh.plot(body if Mesh.is_body else None, is_show=False)
 
-	# create solver
-	print '\n{Creating solver}'
-	Solver()
+	# create the solver
+	solver = Solver()
 
-	# create variables and related matrices
-	print '\n{Assembling matrices}'
-	tic = timeInfo.start()
-	u = Variable('u')
-	v = Variable('v')
-	p = Variable('p')
-	timeInfo.stop(tic, 'Assembling matrices')
-
-	# create Poisson solver
-	poisson_p = Poisson(p)
-
-	# initalization of the RHS of the Poisson equation
-	b = np.empty(Mesh.Nx*Mesh.Ny, dtype=float)
-
-	# open file to store force coefficients
-	outfile = open(Case.path+'/forceCoeffs.dat', ('w' if Solver.start == 0 else 'a'))
-
-	# time loop
-	tic = timeInfo.start()
-	while Solver.ite < Solver.start + Solver.nt:
-		Solver.ite += 1
-		print '\nIteration ', Solver.ite, ' - Time = ', Solver.ite*Solver.dt
-		# updates velocity field without the pressure
-		u.field[:] += Solver.dt*(
-					+1./Solver.Re*lap(u)[:]
-					-u.field[:]*grad(u, 'x')[:]
-					-v.field[:]*grad(u, 'y')[:])
-		v.field[:] += Solver.dt*(
-					+1./Solver.Re*lap(v)[:]
-					-u.field[:]*grad(v, 'x')[:]
-					-v.field[:]*grad(v, 'y')[:])
-		
-		# solves immersed boundary method
-		if Mesh.is_body:
-			ibm(body, u, v)
-			outfile.write(str(Solver.ite*Solver.dt)+'\t'
-						  +str(body.cl)+'\t'+str(body.cd)+'\n')
-			print '{Body} \t Cl = %.3f \t Cd = %.3f' % (body.cl,body.cd)
-		
-		# solve the Poisson equation for pressure
-		b[:] = 1./Solver.dt * (grad(u, 'x')[:] + grad(v, 'y')[:])
-		p.field = poisson_p.solve(p.laplacian.mat, b-p.laplacian.bc_vect, p.field)
-		
-		print '{Poisson} Number of iterations: ', poisson_p.ite
-		
-		# update velocity field
-		u.field[:] -= Solver.dt*grad(p, 'x')[:]
-		v.field[:] -= Solver.dt*grad(p, 'y')[:]
-		
-		# write variable fields
-		if Solver.ite%Solver.write_every == 0:
-			print '\n{Writing results}'
-			u.write()
-			v.write()
-			p.write()
-
-	timeInfo.stop(tic, 'DONE')
-	outfile.close()
+	# solve the Navier-Stokes equations
+	solver.solve()
+	
 
 if __name__ == '__main__':
 	print '\n\t----- pyIBM - START -----\n'
-	main(sys.argv[1::])
+	main(sys.argv[1:])
 	print '\n\t----- pyIBM - END -----\n'

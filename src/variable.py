@@ -1,16 +1,16 @@
-# source: $pyIBM/src/variable.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/variable.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 
+
 import os
-import sys
 
 import numpy as np
 import yaml
 
 from case import Case
+from parameters import Parameters
 from mesh import Mesh
-from solver import Solver
 from matrix import Matrix
 
 class BoundaryCondition:
@@ -58,7 +58,7 @@ class Variable:
 			info = yaml.load(infile)
 		
 		# get initial conditions or read a data file
-		if Solver.start == 0:
+		if Parameters.start == 0:
 			self.field = ( info[self.name]['initialCondition']
 						 * np.ones(Mesh.Nx*Mesh.Ny, dtype=float) )
 		else:
@@ -104,15 +104,15 @@ class Variable:
 
 	def write(self):
 		"""Writes the variable field into a file."""
-		if not os.path.isdir(Case.path+'/'+str(Solver.ite)):
-			os.system('mkdir '+Case.path+'/'+str(Solver.ite))
-		with open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'w') as file_name:
+		if not os.path.isdir(Case.path+'/'+str(Parameters.ite)):
+			os.system('mkdir '+Case.path+'/'+str(Parameters.ite))
+		with open(Case.path+'/'+str(Parameters.ite)+'/'+self.name+'.dat', 'w') as file_name:
 			np.savetxt(file_name, np.c_[self.field], 
 					   fmt='%.6f', delimiter='\t', 
-					   header='%s - %d ites' % (self.name, Solver.ite))
+					   header='%s - %d ites' % (self.name, Parameters.ite))
 	
 	def read(self):
 		"""Reads the variable field from a file."""
-		with open(Case.path+'/'+str(Solver.ite)+'/'+self.name+'.dat', 'r') as file_name:
+		with open(Case.path+'/'+str(Parameters.ite)+'/'+self.name+'.dat', 'r') as file_name:
 			self.field = np.loadtxt(file_name, 
 									dtype=float, delimiter='\t')

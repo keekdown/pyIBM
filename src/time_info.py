@@ -1,6 +1,7 @@
-# source: $pyIBM/src/timeInfo.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/timeInfo.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
+
 
 import time
 

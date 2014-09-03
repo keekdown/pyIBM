@@ -1,6 +1,7 @@
-# source: $pyIBM/src/poisson.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/poisson.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
+
 
 import numpy as np
 import scipy.sparse.linalg as spla
@@ -9,28 +10,26 @@ import pyamg
 
 from case import Case
 
-
 class Poisson:
-	"""Solver to solve a Poisson equation."""
-	solvers = {'cg':spla.cg, 'gmres':spla.gmres, 'bicg':spla.bicg}
+	"""Solver to solve Poisson equation."""
+	solvers = {'cg': spla.cg, 'gmres': spla.gmres, 'bicg': spla.bicg}
 
-	def __init__(self, var):
+	def __init__(self, p):
 		"""Parses the file _infoSolver to initialize the solver.
 		
 		Arguments
 		---------
-		var -- field variable (Variable object) of the Poisson equation.
+		p -- field variable (Variable object) of the Poisson equation.
 		"""
-		infile = open(Case.path+'/_infoSolver.yaml', 'r')
-		data = yaml.load(infile)
-		infile.close()
-		self.solver = Poisson.solvers[data['poisson']['solver']]
-		self.tol = data['poisson']['tol']
-		self.maxiter = data['poisson']['maxiter']
+		with open(Case.path+'/_infoSolver.yaml', 'r') as infile:
+			info = yaml.load(infile)['poisson']
+		self.solver = Poisson.solvers[info['solver']]
+		self.tol = info['tol']
+		self.maxiter = info['maxiter']
 		self.M = None
-		if data['poisson']['precond'] != None:
-			self.ml = pyamg.smoothed_aggregation_solver(var.laplacian.mat)
-			self.M = self.ml.aspreconditioner(cycle=data['poisson']['precond']['cycle'])
+		if 'precond' in info:
+			ml = pyamg.smoothed_aggregation_solver(p.laplacian.mat)
+			self.M = ml.aspreconditioner(cycle=info['precond']['cycle'])
 		self.iterations, self.residuals = [], []
 
 	def solve(self, A, b, xi):

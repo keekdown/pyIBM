@@ -1,14 +1,14 @@
-# source: $pyIBM/src/mesh.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/mesh.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 
+
 import os
-import sys
 
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import cm
-import yaml		
+import yaml
+from matplotlib import pyplot as plt
+from matplotlib import cm		
 
 from case import Case
 

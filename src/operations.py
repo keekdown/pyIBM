@@ -1,5 +1,5 @@
-# source: $pyIMB/src/operations.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIMB/src/operations.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 
 

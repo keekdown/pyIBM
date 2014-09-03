@@ -1,5 +1,5 @@
-# source: $pyIBM/src/matrix.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/matrix.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 
 import os

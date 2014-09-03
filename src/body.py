@@ -1,26 +1,30 @@
-# source: $pyIBM/src/body.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/body.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 		
-from math import *
+
+from math import sin, cos, pi
 import numpy as np
 import yaml
 
 from mesh import Mesh
 from case import Case
 
+
 class Body:
 	"""Creates an immersed boundary."""
 	def __init__(self):
-		"""Parses the file _infoBody.yaml and generates the immersed boundary."""
-		infile = open(Case.path+'/_infoBody.yaml', 'r')
-		info = yaml.load(infile)
-		infile.close()
-		self.name = info['IB']['name']
-		self.coord_file = info['IB']['coordinates']
-		self.is_moving = info['IB']['moving']
+		"""Parses the file _infoBody.yaml 
+		and generates the immersed boundary.
+		"""
+		# parse the file
+		with open(Case.path+'/_infoBody.yaml', 'r') as infile:
+			info = yaml.load(infile)['IB']
+		self.name = info['name']
+		self.coord_file = info['coordinates']
+		self.is_moving = info['moving']
+		# generate the body
 		self.generate()
-		self.cl, self.cd = 0., 0.
 
 	def generate(self):
 		"""Generates the immersed boundary, finds neighbors
@@ -30,7 +34,9 @@ class Body:
 		with open(Case.path+'/'+self.coord_file, 'r') as file_name:
 			self.x, self.y = np.loadtxt(file_name, dtype=float, 
 										delimiter='\t', unpack=True)
-		self.N = len(self.x)
+		
+		self.N = len(self.x)    # number of body points
+		print '\n-> Number of points on the body: ', self.N, '\n'
 		
 		# computes the length vector
 		self.dx = np.empty(self.N, dtype=float)
@@ -40,11 +46,9 @@ class Body:
 		self.dx[0] = self.x[0] - self.x[-1]
 		self.dy[0] = self.y[0] - self.y[-1]
 	
-		# calls function to find the neighbors
+		# find the neighbors
 		self.get_neighbors()
 		
-		print '\n-> Number of points on the body: ', self.N, '\n'
-	
 		# initializes other Lagrangian variables
 		self.u = np.empty(self.N, dtype=float)
 		self.v = np.empty(self.N, dtype=float)

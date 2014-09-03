@@ -1,7 +1,8 @@
-# source: $pyIBM/src/case.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/case.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 		
+
 import os
 
 
@@ -12,7 +13,7 @@ class Case:
 		
 		Arguments
 		---------
-		loc -- location of the case folder (root is the path of pyIBM.py)
+		loc -- location of the case folder (root is the path of pyIBM.py).
 		"""
 		Case.path = os.getcwd()+'/'+loc
 		Case.name = os.path.basename(os.path.normpath(Case.path))

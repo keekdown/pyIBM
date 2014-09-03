@@ -1,12 +1,14 @@
-# source: $pyIBM/src/ibm.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/src/ibm.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
 
-from math import *
+
+from math import sqrt
+
 import numpy as np
 
 from mesh import Mesh
-from solver import Solver
+from parameters import Parameters
 
 
 def dh(r):
@@ -90,13 +92,14 @@ def ibm(body, u, v):
 	if body.is_moving:
 		body.kinematics()
 	
+	dt = Parameters.dt
 	N_ibm = 1
 	body.cl,body.cd = 0.,0.
 	for ite in xrange(N_ibm):
 		body.u = interpolation(u.field, body)
 		body.v = interpolation(v.field, body)
-		body.fx[:] = (body.ud[:] - body.u[:]) / Solver.dt
-		body.fy[:] = (body.vd[:] - body.v[:]) / Solver.dt
+		body.fx[:] = (body.ud[:] - body.u[:]) / dt
+		body.fy[:] = (body.vd[:] - body.v[:]) / dt
 
 		for neighbor, fx_b, fy_b in zip(body.neighbor, body.fx, body.fy):
 			body.cd += ( -2.*fx_b
@@ -109,5 +112,5 @@ def ibm(body, u, v):
 		fx += distribution(body.fx, body)
 		fy += distribution(body.fy, body)
 
-	u.field[:] += Solver.dt * fx[:]
-	v.field[:] += Solver.dt * fy[:]
+	u.field[:] += dt * fx[:]
+	v.field[:] += dt * fy[:]
