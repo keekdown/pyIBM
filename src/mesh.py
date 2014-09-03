@@ -4,6 +4,7 @@
 
 import os
 import sys
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -88,24 +89,25 @@ class Mesh:
 	"""Class to generate a Cartesian grid mesh."""
 	def __init__(self):
 		"""Parses the file _infoMesh.yaml and generates the mesh."""
-		Mesh.is_body = False
-		
 		infile = open(Case.path+'/_infoMesh.yaml', 'r')
 		info_mesh = yaml.load(infile)
 		infile.close()
 		
-		Mesh.direction = []
+		Mesh.directions = {}
+		Mesh.is_body = False
 		for info in info_mesh:
 			if 'direction' in info:
-				Mesh.direction.append(Direction(info))
+				Mesh.directions[info['direction']] = Direction(info)
 			elif 'body' in info:
 				Mesh.is_body = True
 		
+		# generate the mesh
 		self.generate()
 		
-		Mesh.xmin, Mesh.xmax = Mesh.direction[0].start, Mesh.direction[0].end
-		Mesh.ymin, Mesh.ymax = Mesh.direction[1].start, Mesh.direction[1].end
-		Mesh.Nx, Mesh.Ny = Mesh.direction[0].N, Mesh.direction[1].N
+		# store the boundaries of the domain and the number of points in each direction
+		Mesh.xmin, Mesh.xmax = Mesh.directions['x'].start, Mesh.directions['x'].end
+		Mesh.ymin, Mesh.ymax = Mesh.directions['y'].start, Mesh.directions['y'].end
+		Mesh.Nx, Mesh.Ny = Mesh.directions['x'].N, Mesh.directions['y'].N
 		
 		self.write()
 
@@ -116,11 +118,13 @@ class Mesh:
 
 	def generate(self):
 		"""Generates the mesh."""
-		for direction in Mesh.direction:
+		for direction in Mesh.directions.itervalues():
+			# generate the mesh in each direction
 			direction.generate()
-		
-		Mesh.x, Mesh.y = Mesh.direction[0].coord,Mesh.direction[1].coord
-		Mesh.dx, Mesh.dy = Mesh.direction[0].delta,Mesh.direction[1].delta
+	
+		# store the mesh coordinates and the cell widths
+		Mesh.x, Mesh.y = Mesh.directions['x'].coord, Mesh.directions['y'].coord
+		Mesh.dx, Mesh.dy = Mesh.directions['x'].delta, Mesh.directions['y'].delta
 
 	def write(self):
 		"""Writes the mesh into a data file."""
@@ -138,36 +142,35 @@ class Mesh:
 														  delimiter='\t',
 														  unpack=True)
 			
-	def plot(self,body=None, is_show=False):
+	def plot(self, body=None, is_show=False):
 		"""Plots the Cartesian mesh grid.
 		
 		Arguments
 		---------
-		body -- Body object immersed (default None).
+		body -- Body object immersed in the domain (default None).
 		is_show -- Boolean to display the mesh on the screen (default False).
 		"""
 		if not os.path.isdir(Case.path+'/images'):
 			os.system('mkdir '+Case.path+'/images')
 		plt.figure(num=None)
 		plt.grid(False)
-		plt.xlabel('x', fontsize=16)
-		plt.ylabel('y', fontsize=16)
+		plt.xlabel(r'$x$', fontsize=16)
+		plt.ylabel(r'$y$', fontsize=16)
 		for i in xrange(Mesh.Nx):
 			plt.axvline(Mesh.x[i])
-		for i in xrange(Mesh.Ny):
-			plt.axhline(Mesh.y[i])
+		for j in xrange(Mesh.Ny):
+			plt.axhline(Mesh.y[j])
 		plt.xlim(Mesh.xmin, Mesh.xmax)
 		plt.ylim(Mesh.ymin, Mesh.ymax)
+		title = 'MESH: %d x %d' % (Mesh.Nx, Mesh.Ny)
+		save_name = 'mesh_%d_%d' % (Mesh.Nx, Mesh.Ny)
 		if body != None:
-			plt.plot(np.append(body.x, body.x[0]), np.append(body.y, body.y[0]), 'ko-', lw=1, markersize=4)
-			for k in xrange(body.N):
-				plt.plot(Mesh.x[body.neighbor[k]%Mesh.Nx], Mesh.y[body.neighbor[k]/Mesh.Nx],
-						'ro', markersize=4)
-			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny)+' / IB: '+str(body.N))
-			plt.savefig(Case.path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'_'+str(body.N)+'.png')
-		else:
-			plt.title('MESH: '+str(Mesh.Nx)+'x'+str(Mesh.Ny))
-			plt.savefig(Case.path+'/images/mesh_'+str(Mesh.Nx)+'_'+str(Mesh.Ny)+'.png')
+			plt.plot(np.append(body.x, body.x[0]), np.append(body.y, body.y[0]),
+					 color='k', ls='-', lw=1, marker='o', markersize=4)
+			title += ' / IB: %d' % body.N
+			save_name += '_%d' % body.N
+		plt.title(title, fontsize=16)
+		plt.savefig(Case.path+'/images/'+save_name+'.png')
 		if is_show:
 			plt.show()
 		plt.clf()
