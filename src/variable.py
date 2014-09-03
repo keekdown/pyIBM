@@ -11,7 +11,7 @@ import yaml
 from case import Case
 from mesh import Mesh
 from solver import Solver
-from matrix import *
+from matrix import Matrix
 
 class BoundaryCondition:
 	"""Defines a boundary condition by its type and values."""
