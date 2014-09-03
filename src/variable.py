@@ -65,7 +65,8 @@ class Variable:
 			self.read()
 
 		# boundary conditions
-		self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
+		self.set_boundary_conditions(info[self.name]['boundaryCondition'])
+		#self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
 		
 		# assemble matrices
 		if not skip_assemble:
@@ -76,6 +77,18 @@ class Variable:
 				self.assemble_matrix(name=d['type'],
 									 scheme=d['scheme'], 
 									 direction=(d['direction'] if 'direction' in d else ''))
+
+	def set_boundary_conditions(self, info_bc):
+		"""Sets the boundary conditions.
+		
+		Arguments
+		---------
+		info_bc -- dictionary that contains the info related to the boundary conditions.
+		"""
+		self.bc = {}
+		for location, value in info_bc.iteritems():
+			N = (Mesh.Nx if location in ['bottom', 'top'] else Mesh.Ny)
+			self.bc[location] = BoundaryCondition(value, N)
 
 	def assemble_matrix(self, name, scheme, direction):
 		"""Assembles a matrix related to a variable, calling the class Matrix.

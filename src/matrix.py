@@ -40,12 +40,15 @@ class Matrix:
 		A = []
 		B = np.zeros(Nx*Ny, dtype=float)
 
-		dct = {'x': [Mesh.Nx, Mesh.dx, self.bc.left, self.bc.right, 1], 
-			   'y': [Mesh.Ny, Mesh.dy, self.bc.bottom, self.bc.top, Mesh.Nx]}
-		N = dct[direction][0]
-		d = dct[direction][1]
-		bc1, bc2 = dct[direction][2], dct[direction][3]
-		p = dct[direction][4]
+		dct = {'x': {'N': Mesh.Nx, 'delta': Mesh.dx,
+					 'bc1': self.bc['left'], 'bc2': self.bc['right'], 'p': 1},
+			   'y': {'N': Mesh.Ny, 'delta': Mesh.dy,
+			   		 'bc1': self.bc['bottom'], 'bc2': self.bc['top'], 'p': Mesh.Nx}}
+
+		N = dct[direction]['N']
+		d = dct[direction]['delta']
+		bc1, bc2 = dct[direction]['bc1'], dct[direction]['bc2']
+		p = dct[direction]['p']
 
 		if scheme == 'backward':
 			for i in xrange(Nx*Ny):
@@ -112,38 +115,38 @@ class Matrix:
 			if I == 0:
 				A.append([i, i+1, 1./dx[I]**2])
 				A.append([i, i, -2./dx[I]**2])
-				if bc.left.bc_type == 'dirichlet':
-					B[i] += bc.left.values[J]/dx[I]**2
-				elif bc.left.bc_type == 'neumann':
+				if bc['left'].bc_type == 'dirichlet':
+					B[i] += bc['left'].values[J]/dx[I]**2
+				elif bc['left'].bc_type == 'neumann':
 					A.append([i, i, 1./dx[I]**2])
-					B[i] += -bc.left.values[J]/dx[I]
+					B[i] += -bc['left'].values[J]/dx[I]
 			#right
 			if I == Nx-1:
 				A.append([i, i-1, 1./dx[I]**2])
 				A.append([i, i, -2./dx[I]**2])
-				if bc.right.bc_type == 'dirichlet':
-					B[i] += bc.right.values[J]/dx[I]**2
-				elif bc.right.bc_type == 'neumann':
+				if bc['right'].bc_type == 'dirichlet':
+					B[i] += bc['right'].values[J]/dx[I]**2
+				elif bc['right'].bc_type == 'neumann':
 					A.append([i, i, 1./dx[I]**2])
-					B[i] += bc.right.values[J]/dx[I]
+					B[i] += bc['right'].values[J]/dx[I]
 			#bottom
 			if i < Nx:
 				A.append([i, i+Nx, 1./dy[J]**2])
 				A.append([i, i, -2./dy[J]**2])
-				if bc.bottom.bc_type == 'dirichlet':
-					B[i] += bc.bottom.values[I]/dy[J]**2
-				elif bc.bottom.bc_type == 'neumann':
+				if bc['bottom'].bc_type == 'dirichlet':
+					B[i] += bc['bottom'].values[I]/dy[J]**2
+				elif bc['bottom'].bc_type == 'neumann':
 					A.append([i, i, 1./dy[J]**2])
-					B[i] += -bc.bottom.values[I]/dy[J]
+					B[i] += -bc['bottom'].values[I]/dy[J]
 			#top
 			if i >= Nx*(Ny-1):
 				A.append([i, i-Nx, 1./dy[J]**2])
 				A.append([i, i, -2./dy[J]**2])
-				if bc.top.bc_type == 'dirichlet':
-					B[i] += bc.top.values[I]/dy[J]**2
-				elif bc.top.bc_type == 'neumann':
+				if bc['top'].bc_type == 'dirichlet':
+					B[i] += bc['top'].values[I]/dy[J]**2
+				elif bc['top'].bc_type == 'neumann':
 					A.append([i, i, 1./dy[J]**2])
-					B[i] += bc.top.values[I]/dy[J]
+					B[i] += bc['top'].values[I]/dy[J]
 			#point not on left and not on right
 			if I != 0 and I != Nx-1:
 				A.append([i, i-1, 2./dx[I-1]/(dx[I-1]+dx[I])])
