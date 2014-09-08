@@ -1,27 +1,34 @@
-# script: $pyIBM/scripts/clean.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/scripts/clean_case.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
+
 
 import os
 import sys
 
+sys.path.insert(0,'./src')
+from case import Case
+from input_output import read_inputs
 
-def main(arg):
+
+def main():
 	"""Script to clean a given case."""
-	pwd = os.getcwd()
-	case_name = arg[1]
-	case_path = pwd+'/'+case_name+'/'
+	args = read_inputs()
+	Case(args.path)
 
-	print '[info]: cleaning solution folders in ', case_name
+	print 'case path: %s' % Case.path
+
+	print '[info]: cleaning mesh and force coefficients'
+	os.system('rm -f '+Case.path+'/*.dat')
+
+	print '[info]: cleaning solution folders'
 	for i in xrange(10):
-		os.system('rm -rf '+case_path+str(i)+'*')
+		os.system('rm -rf '+Case.path+'/'+str(i)+'*')
 
-	print '[info]: cleaning images in ', case_name
-	os.system('rm -rf '+case_path+'images')
-	os.system('rm -f '+case_path+'*.dat')
-	os.system('rm -f '+case_path+'*.png')
+	print '[info]: cleaning images'
+	os.system('rm -rf '+Case.images)
 
 if __name__ == '__main__':
 	print '\n\t----- START - CLEANING -----\n'
-	main(sys.argv)
+	main()
 	print '\n\t----- END - CLEANING -----\n'
