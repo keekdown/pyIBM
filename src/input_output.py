@@ -8,12 +8,29 @@ import argparse
 
 
 def read_inputs():
-	# list of command-line arguments
-	parser = argparse.ArgumentParser(description='Solves the Navier-Stokes equations')
+	"""Parser of pyIBM."""
+	# create the parser
+	parser = argparse.ArgumentParser(description='pyIBM command-line arguments')
+	
+	# fill the parser
+	
 	parser.add_argument('-p', '--path', dest='path', type=str,
 						help='path of the case folder')
+
 	parser.add_argument('--mesh', dest='mesh', action='store_true',
-						help='generates the computational domain without solving the Navier-Stokes equations')
+						help=('generates the computational domain ' + 
+							 'without solving the Navier-Stokes equations'))
+	
+	parser.add_argument('-v', '--variable', dest='variable', type=str, nargs='+',
+						default=['pressure', 'velocity', 'vorticity'],
+					    help='list of flow variables to plot')
+
+	parser.add_argument('-z', '--zoom', dest='zoom', type=float, nargs='+',
+						help='sets the limits of the figures')
+
+	parser.add_argument('-t', '--time', type=int, nargs='+',
+						help=('time-level(s) to plot ' + 
+							  '(either a list [min, max, every] or a specific time-level)'))
 
 	# parse the command-line
 	return parser.parse_args()

@@ -20,6 +20,7 @@ from body import Body
 from solver import Solver
 from variable import Variable
 from operations import grad, lap
+from input_output import read_inputs
 
 
 def plot_pressure(p, body=None, limits=None):
@@ -168,19 +169,8 @@ def plot_vorticity(u, v, body=None, limits=None):
 
 def main():
 	"""Script to plot pressure, velocity and/or vorticity."""
-	# list of command-line arguments
-	parser = argparse.ArgumentParser(description='Plots pressure, velocity and/or vorticity')
-	parser.add_argument('-p', '--path', dest='path', 
-						help='path of the case folder', type=str)
-	parser.add_argument('-v', '--variable', dest='variable', 
-						help='list of variables to plot (pressure, velocity, vorticity)', 
-						nargs='+', type=str, default=['pressure', 'velocity', 'vorticity'])
-	parser.add_argument('-z', '--zoom', dest='zoom', 
-						help='limits of the plot', nargs='+', type=float)
-	parser.add_argument('-t', '--time', dest='time', 
-						help='time-step to plot / List: (min, max, every) or specific time', 
-						nargs='+', type=int)
-	args = parser.parse_args()
+	# parse the command-line
+	args = read_inputs()
 
 	# create the case
 	Case(args.path)
