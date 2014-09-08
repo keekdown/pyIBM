@@ -3,7 +3,7 @@ time:
   start: 0
   nt: 1000
   dt: 1.0E-03
-  writeEvery: 1000
+  writeEvery: 100
 
 Re: 40
 
