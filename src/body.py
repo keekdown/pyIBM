@@ -7,8 +7,8 @@ from math import sin, cos, pi
 import numpy as np
 import yaml
 
-from mesh import Mesh
 from case import Case
+from mesh import Mesh
 
 
 class Body:
@@ -20,6 +20,7 @@ class Body:
 		# parse the file
 		with open(Case.path+'/_infoBody.yaml', 'r') as infile:
 			info = yaml.load(infile)['IB']
+		# store info
 		self.name = info['name']
 		self.coord_file = info['coordinates']
 		self.is_moving = info['moving']
@@ -30,26 +31,21 @@ class Body:
 		"""Generates the immersed boundary, finds neighbors
 		and initializes Lagrangian variables.
 		"""
-		# reads the coordinate file
-		with open(Case.path+'/'+self.coord_file, 'r') as file_name:
-			self.x, self.y = np.loadtxt(file_name, dtype=float, 
+		# read the coordinate file
+		with open(Case.path+'/'+self.coord_file, 'r') as infile:
+			self.x, self.y = np.loadtxt(infile, dtype=float, 
 										delimiter='\t', unpack=True)
 		
 		self.N = len(self.x)    # number of body points
 		print '\n-> Number of points on the body: ', self.N, '\n'
 		
-		# computes the length vector
-		self.dx = np.empty(self.N, dtype=float)
-		self.dy = np.empty(self.N, dtype=float)
-		self.dx[1:self.N] = self.x[1:self.N] - self.x[0:self.N-1]
-		self.dy[1:self.N] = self.y[1:self.N] - self.y[0:self.N-1]
-		self.dx[0] = self.x[0] - self.x[-1]
-		self.dy[0] = self.y[0] - self.y[-1]
+		# compute the length vector
+		self.get_length()
 	
 		# find the neighbors
 		self.get_neighbors()
 		
-		# initializes other Lagrangian variables
+		# initialize other Lagrangian variables
 		self.u = np.empty(self.N, dtype=float)
 		self.v = np.empty(self.N, dtype=float)
 		self.fx = np.empty(self.N, dtype=float)
@@ -57,6 +53,17 @@ class Body:
 		self.ud = np.zeros(self.N, dtype=float)
 		self.vd = np.zeros(self.N, dtype=float)
 		self.x0, self.y0 = np.copy(self.x), np.copy(self.y)
+
+	def get_length(self):
+		"""Computes the distance between two Lagrangian points
+		in each direction for each body point.
+		"""
+		self.dx = np.empty(self.N, dtype=float)
+		self.dy = np.empty(self.N, dtype=float)
+		self.dx[1:self.N] = self.x[1:self.N] - self.x[0:self.N-1]
+		self.dy[1:self.N] = self.y[1:self.N] - self.y[0:self.N-1]
+		self.dx[0] = self.x[0] - self.x[-1]
+		self.dy[0] = self.y[0] - self.y[-1]
 
 	def get_neighbors(self):
 		"""Finds the closest Eulerian point on the mesh grid."""

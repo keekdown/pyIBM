@@ -1,20 +1,25 @@
-# script: $pyIBM/scripts/post_processing.py
-# Olivier Mesnard (mesnardo@gwu.edu)
+# file: $pyIBM/scripts/post_processing.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
 # BarbaGroup (lorenabarba.com)
+
 
 import os
 import sys
 import argparse
+
 import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+from matplotlib import cm
 
 sys.path.insert(0,'./src')
-from case import *
-from mesh import *
-from body import *
-from solver import *
-from variable import *
-from operations import *
+from case import Case
+from domain import Domain
+from mesh import Mesh
+from parameters import Parameters
+from body import Body
+from solver import Solver
+from variable import Variable
+from operations import grad, lap
 
 
 def plot_pressure(p, body=None, limits=None):
@@ -56,8 +61,8 @@ def plot_pressure(p, body=None, limits=None):
 	plt.ylim(limits[2], limits[3])
 
 	# inserts title and saves figure
-	plt.title('pressure - '+str(Solver.ite))
-	plt.savefig(Case.path+'/images/'+'pressure'+str('%04d'%(Solver.ite,))+'.png')
+	plt.title('pressure - '+str(Parameters.ite))
+	plt.savefig(Case.path+'/images/'+'pressure'+str('%04d'%(Parameters.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
@@ -105,8 +110,8 @@ def plot_velocity(u, v, body=None, limits=None):
 	plt.ylim(limits[2], limits[3])
 
 	# inserts title and saves the figure
-	plt.title('velocity - '+str(Solver.ite))
-	plt.savefig(Case.path+'/images/'+'velocity'+str('%04d'%(Solver.ite,))+'.png')
+	plt.title('velocity - '+str(Parameters.ite))
+	plt.savefig(Case.path+'/images/'+'velocity'+str('%04d'%(Parameters.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
@@ -154,8 +159,8 @@ def plot_vorticity(u, v, body=None, limits=None):
 	plt.ylim(limits[2], limits[3])
 
 	# inserts title and saves figure
-	plt.title('vorticity - '+str(Solver.ite))
-	plt.savefig(Case.path+'/images/'+'vorticity'+str('%04d'%(Solver.ite,))+'.png')
+	plt.title('vorticity - '+str(Parameters.ite))
+	plt.savefig(Case.path+'/images/'+'vorticity'+str('%04d'%(Parameters.ite,))+'.png')
 	
 	plt.clf()
 	plt.close()
@@ -177,11 +182,11 @@ def main():
 						nargs='+', type=int)
 	args = parser.parse_args()
 
-	# creates the case
+	# create the case
 	Case(args.path)
-	
-	# generates the mesh
-	mesh = Mesh()
+
+	# generates the computational domain
+	Domain()
 	
 	# zoom on a given window
 	if args.zoom != None:
@@ -189,21 +194,18 @@ def main():
 	else:
 		limits = [Mesh.xmin, Mesh.xmax, Mesh.ymin, Mesh.ymax]
 
-	# creates potential bodies
-	body = Body() if Mesh.is_body else None
-
 	# initializes the solver
-	Solver()
+	Solver(skip_assemble=True, skip_poisson=True)
 	
 	# changes timesteps to plot if argument specified
 	if args.time != None:
 		if len(args.time) == 1:
-			Solver.start, Solver.nt = args.time[0], 0
+			Parameters.start, Parameters.nt = args.time[0], 0
 		else:
-			Solver.start = args.time[0]
-			Solver.write_every = args.time[2]
-			Solver.nt = args.time[1] - Solver.start + Solver.write_every
-			Solver.ite = Solver.start - Solver.write_every
+			Parameters.start = args.time[0]
+			Parameters.write_every = args.time[2]
+			Parameters.nt = args.time[1] - Parameters.start + Parameters.write_every
+			Parameters.ite = Parameters.start - Parameters.write_every
 
 	# chooses variables to plot if argument specified
 	if args.variable != None:
@@ -213,34 +215,29 @@ def main():
 
 	print variables	
 
-	# creates variables and necessary matrices for vorticity
-	if 'pressure' in variables:
-		p = Variable('p', skip_assemble=True)
-	if 'velocity' in variables or 'vorticity' in variables:
-		u = Variable('u', skip_assemble=True)
-		v = Variable('v', skip_assemble=True)
-		if 'vorticity' in variables:
-			u.assemble_matrix('gradient', scheme='central', direction='y')
-			v.assemble_matrix('gradient', scheme='central', direction='x')
+	# assemble matrices to compute vorticity
+	if 'vorticity' in variables:
+			Solver.u.assemble_matrix({'type': 'gradient', 'scheme': 'central', 'direction': 'y'})
+			Solver.v.assemble_matrix({'type': 'gradient', 'scheme': 'central', 'direction': 'x'})
 
 	# create an 'images' folder in case folder if necessary
 	if not os.path.isdir(Case.path+'/images'):
 		os.system('mkdir '+Case.path+'/images')
 
 	# loops over time
-	for ite in xrange(Solver.start, Solver.start+Solver.nt, Solver.write_every):
+	for ite in xrange(Parameters.start, Parameters.start+Parameters.nt, Parameters.write_every):
 		
-		Solver.ite += Solver.write_every
+		Parameters.ite += Parameters.write_every
 
-		print 'Iteration ', Solver.ite
+		print 'Iteration ', Parameters.ite
 
 		# plots different variables
 		if 'pressure' in variables:
-			plot_pressure(p, body, limits)
+			plot_pressure(Solver.p, Domain.body, limits)
 		if 'velocity' in variables:
-			plot_velocity(u, v, body, limits)
+			plot_velocity(Solver.u, Solver.v, Domain.body, limits)
 		if 'vorticity' in variables:
-			plot_vorticity(u, v, body, limits)
+			plot_vorticity(Solver.u, Solver.v, Domain.body, limits)
 		
 
 if __name__ == '__main__':

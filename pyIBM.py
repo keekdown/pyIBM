@@ -1,53 +1,40 @@
 #!/usr/env/bin python
+# file: $pyIBM/pyIBM.py
+# author: Olivier Mesnard (mesnardo@gwu.edu)
+# BarbaGroup (lorenabarba.com)
 
-##############################################
-# pyIBM - Immersed Boundary Method in Python #
-# Olivier Mesnard (mesnardo@gwu.edu)         #
-# BarbaGroup (lorenabarba.com)               #
-##############################################
 
 import os
 import sys
-import numpy as np
 
 sys.path.insert(0,os.getcwd()+'/src')
 from case import Case
-from mesh import Mesh
-from body import Body
+from domain import Domain
 from solver import Solver
-from variable import Variable
-from matrix import Matrix
-from operations import grad, lap
-from ibm import ibm
-from poisson import Poisson
+from input_output import read_inputs
 
-import time_info
 
-def main(arg):
+def main():
+	"""Solves the Navier-Stokes equations in a two-dimensional domain
+	with an immersed boundary method."""
 
-	Case(arg[0])
+	# parse the command-line
+	args = read_inputs()
 
-	# generate the mesh
-	mesh = Mesh()
+	# create the case
+	Case(args.path)
 
-	# generate the immersed boundary
-	if Mesh.is_body:
-		body = Body()
-
-	if '--mesh' in arg:
-		mesh.plot(body if Mesh.is_body else None, is_show=True)
-		sys.exit(0)
-	else:
-		mesh.plot(body if Mesh.is_body else None, is_show=False)
-
+	# create the computational domain
+	Domain(is_show=args.mesh)
+	
 	# create the solver
 	solver = Solver()
 
 	# solve the Navier-Stokes equations
-	solver.solve()
+	solver.solve(body=Domain.body)
 	
 
 if __name__ == '__main__':
 	print '\n\t----- pyIBM - START -----\n'
-	main(sys.argv[1:])
+	main()
 	print '\n\t----- pyIBM - END -----\n'

@@ -96,8 +96,8 @@ def ibm(body, u, v):
 	N_ibm = 1
 	body.cl,body.cd = 0.,0.
 	for ite in xrange(N_ibm):
-		body.u = interpolation(u.field, body)
-		body.v = interpolation(v.field, body)
+		body.u = interpolation(u, body)
+		body.v = interpolation(v, body)
 		body.fx[:] = (body.ud[:] - body.u[:]) / dt
 		body.fy[:] = (body.vd[:] - body.v[:]) / dt
 
@@ -112,5 +112,7 @@ def ibm(body, u, v):
 		fx += distribution(body.fx, body)
 		fy += distribution(body.fy, body)
 
-	u.field[:] += dt * fx[:]
-	v.field[:] += dt * fy[:]
+	u += dt * fx
+	v += dt * fy
+	
+	return u, v

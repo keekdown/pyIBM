@@ -8,7 +8,6 @@ import os
 import numpy as np
 import yaml
 from matplotlib import pyplot as plt
-from matplotlib import cm		
 
 from case import Case
 
@@ -44,35 +43,35 @@ class Direction:
 		self.start = info_direction['start']
 		self.end = info_direction['subdomains'][-1]['end']
 		
-		self.subdomain = []
+		self.subdomains = []
 		for info in info_direction['subdomains']:
-			self.subdomain.append(Subdomain(info))
+			self.subdomains.append(Subdomain(info))
 
 	def generate(self):
 		"""Generates the mesh in one direction (coordinates and grid spacing)."""
-		for idx, sd in enumerate(self.subdomain):
-			if sd.is_uniform:
-				idx_uniform = idx
-				if idx != 0:
-					start = self.subdomain[idx-1].end
+		for i, subdomain in enumerate(self.subdomains):
+			if subdomain.is_uniform:
+				i_uniform = i
+				if i != 0:
+					start = self.subdomains[i-1].end
 				else:
 					start = self.start
-				h = (sd.end-start)/(sd.N-1)
-				coord = list(start + h*np.arange(sd.N))
+				h = (subdomain.end - start) / (subdomain.N - 1)
+				coord = list(start + h*np.arange(subdomain.N))
 		
-		for idx, sd in enumerate(self.subdomain):
-			if not sd.is_uniform:
-				if idx < idx_uniform:
+		for i, subdomain in enumerate(self.subdomains):
+			if not subdomain.is_uniform:
+				if i < i_uniform:
 					while True:
-						x = coord[0] + sd.gamma*(coord[0]-coord[1])
+						x = coord[0] + subdomain.gamma*(coord[0]-coord[1])
 						if x-self.start > coord[1]-coord[0]:
-							coord.insert(0,x)
+							coord.insert(0, x)
 						else:
-							coord.insert(0,self.start)
+							coord.insert(0, self.start)
 							break
-				if idx > idx_uniform:
+				if i > i_uniform:
 					while True:
-						x = coord[-1] + sd.gamma*(coord[-1]-coord[-2])
+						x = coord[-1] + subdomain.gamma*(coord[-1]-coord[-2])
 						if self.end-x > coord[-1]-coord[-2]:
 							coord.append(x)
 						else:
@@ -89,12 +88,12 @@ class Mesh:
 	"""Class to generate a Cartesian grid mesh."""
 	def __init__(self):
 		"""Parses the file _infoMesh.yaml and generates the mesh."""
-		infile = open(Case.path+'/_infoMesh.yaml', 'r')
-		info_mesh = yaml.load(infile)
-		infile.close()
+		Mesh.is_body = False
+		
+		with open(Case.path+'/_infoMesh.yaml', 'r') as infile:
+			info_mesh = yaml.load(infile)
 		
 		Mesh.directions = {}
-		Mesh.is_body = False
 		for info in info_mesh:
 			if 'direction' in info:
 				Mesh.directions[info['direction']] = Direction(info)
@@ -109,6 +108,7 @@ class Mesh:
 		Mesh.ymin, Mesh.ymax = Mesh.directions['y'].start, Mesh.directions['y'].end
 		Mesh.Nx, Mesh.Ny = Mesh.directions['x'].N, Mesh.directions['y'].N
 		
+		# write the mesh
 		self.write()
 
 		print '\n'
@@ -128,50 +128,16 @@ class Mesh:
 
 	def write(self):
 		"""Writes the mesh into a data file."""
-		with open(Case.path+'/mesh.dat', 'w') as file_name:
-			np.savetxt(file_name, np.c_[Mesh.x, Mesh.y, Mesh.dx, Mesh.dy], 
+		with open(Case.path+'/mesh.dat', 'w') as outfile:
+			np.savetxt(outfile, np.c_[Mesh.x, Mesh.y, Mesh.dx, Mesh.dy], 
 					   fmt='%.6f', delimiter='\t', 
 					   header='Mesh (%d by %d): x, y, dx, dy' 
 					   % (Mesh.Nx, Mesh.Ny))
 
 	def read(self):
 		"""Reads the mesh from a data file."""
-		with open(Case.path+'/mesh.dat', 'r') as file_name:
-			Mesh.x, Mesh.y, Mesh.dx, Mesh.dy = np.loadtxt(file_name, 
+		with open(Case.path+'/mesh.dat', 'r') as infile:
+			Mesh.x, Mesh.y, Mesh.dx, Mesh.dy = np.loadtxt(infile, 
 														  dtype=float, 
 														  delimiter='\t',
 														  unpack=True)
-			
-	def plot(self, body=None, is_show=False):
-		"""Plots the Cartesian mesh grid.
-		
-		Arguments
-		---------
-		body -- Body object immersed in the domain (default None).
-		is_show -- Boolean to display the mesh on the screen (default False).
-		"""
-		if not os.path.isdir(Case.path+'/images'):
-			os.system('mkdir '+Case.path+'/images')
-		plt.figure(num=None)
-		plt.grid(False)
-		plt.xlabel(r'$x$', fontsize=16)
-		plt.ylabel(r'$y$', fontsize=16)
-		for i in xrange(Mesh.Nx):
-			plt.axvline(Mesh.x[i])
-		for j in xrange(Mesh.Ny):
-			plt.axhline(Mesh.y[j])
-		plt.xlim(Mesh.xmin, Mesh.xmax)
-		plt.ylim(Mesh.ymin, Mesh.ymax)
-		title = 'MESH: %d x %d' % (Mesh.Nx, Mesh.Ny)
-		save_name = 'mesh_%d_%d' % (Mesh.Nx, Mesh.Ny)
-		if body != None:
-			plt.plot(np.append(body.x, body.x[0]), np.append(body.y, body.y[0]),
-					 color='k', ls='-', lw=1, marker='o', markersize=4)
-			title += ' / IB: %d' % body.N
-			save_name += '_%d' % body.N
-		plt.title(title, fontsize=16)
-		plt.savefig(Case.path+'/images/'+save_name+'.png')
-		if is_show:
-			plt.show()
-		plt.clf()
-		plt.close()

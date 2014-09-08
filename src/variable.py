@@ -13,6 +13,7 @@ from parameters import Parameters
 from mesh import Mesh
 from matrix import Matrix
 
+
 class BoundaryCondition:
 	"""Defines a boundary condition by its type and values."""
 	def __init__(self, value, N):
@@ -43,40 +44,33 @@ class BoundaryConditions:
 
 class Variable:
 	"""Creates a variable."""
-	def __init__(self, name, skip_assemble=False):
+	def __init__(self, name, info):
 		"""Creates a variable parsing the file _infoFlow.yaml.
 
 		Arguments
 		---------
 		name -- variable's name.
+		info -- info about initial conditions and boundary conditions.
 		skip_assemble -- boolean, if True, not assembling matrices related to the variable (default False).
 		"""
 		self.name = name
-	
-		# parse flow file with yaml
-		with open(Case.path+'/_infoFlow.yaml', 'r') as infile:
-			info = yaml.load(infile)
-		
 		# get initial conditions or read a data file
+		self.get_initial_conditions(info['initialCondition'])
+		# boundary conditions
+		self.set_boundary_conditions(info['boundaryCondition'])
+
+	def get_initial_conditions(self, info_ic):
+		"""Gets the initial conditions.
+		
+		Arguments
+		---------
+		info_ic -- dictionary that contains the info related to the initial conditions.
+		"""
 		if Parameters.start == 0:
-			self.field = ( info[self.name]['initialCondition']
+			self.field = ( info_ic
 						 * np.ones(Mesh.Nx*Mesh.Ny, dtype=float) )
 		else:
 			self.read()
-
-		# boundary conditions
-		self.set_boundary_conditions(info[self.name]['boundaryCondition'])
-		#self.bc = BoundaryConditions(info[self.name]['boundaryCondition'])
-		
-		# assemble matrices
-		if not skip_assemble:
-			# parse schem file using yaml
-			with open(Case.path+'/_infoScheme.yaml', 'r') as infile:
-				info = yaml.load(infile)
-			for d in info[self.name]:
-				self.assemble_matrix(name=d['type'],
-									 scheme=d['scheme'], 
-									 direction=(d['direction'] if 'direction' in d else ''))
 
 	def set_boundary_conditions(self, info_bc):
 		"""Sets the boundary conditions.
@@ -90,29 +84,35 @@ class Variable:
 			N = (Mesh.Nx if location in ['bottom', 'top'] else Mesh.Ny)
 			self.bc[location] = BoundaryCondition(value, N)
 
-	def assemble_matrix(self, name, scheme, direction):
-		"""Assembles a matrix related to a variable, calling the class Matrix.
+	def assemble_matrix(self, info):
+		"""Assembles a matrix related to one variable.
 		
 		Arguments
 		---------
-		name -- variable's name.
-		scheme -- numerical scheme for discretization.
-		direction -- gradient's direction.
+		info -- info related to the matrix.
 		"""
-		setattr(self, name+direction, 
-				Matrix(self.bc, name, scheme, direction))
+		setattr(self, info['type']+info['direction'],
+				Matrix(self.bc, info['type'], info['scheme'],
+					   info['direction']))
+
+	def assemble_matrices(self):
+		"""Assembles matrices related to one variable."""	
+		with open(Case.path+'/_infoScheme.yaml', 'r') as infile:
+			info_matrices = yaml.load(infile)
+		for info_matrix in info_matrices[self.name]:
+			if 'direction' not in info_matrix:
+				info_matrix['direction'] = ''
+			self.assemble_matrix(info_matrix)
 
 	def write(self):
 		"""Writes the variable field into a file."""
-		if not os.path.isdir(Case.path+'/'+str(Parameters.ite)):
-			os.system('mkdir '+Case.path+'/'+str(Parameters.ite))
-		with open(Case.path+'/'+str(Parameters.ite)+'/'+self.name+'.dat', 'w') as file_name:
-			np.savetxt(file_name, np.c_[self.field], 
+		with open(Case.path+'/'+str(Parameters.ite)+'/'+self.name+'.dat', 'w') as outfile:
+			np.savetxt(outfile, np.c_[self.field], 
 					   fmt='%.6f', delimiter='\t', 
 					   header='%s - %d ites' % (self.name, Parameters.ite))
 	
 	def read(self):
 		"""Reads the variable field from a file."""
-		with open(Case.path+'/'+str(Parameters.ite)+'/'+self.name+'.dat', 'r') as file_name:
-			self.field = np.loadtxt(file_name, 
+		with open(Case.path+'/'+str(Parameters.ite)+'/'+self.name+'.dat', 'r') as infile:
+			self.field = np.loadtxt(infile, 
 									dtype=float, delimiter='\t')
