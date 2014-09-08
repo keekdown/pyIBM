@@ -60,8 +60,9 @@ class Solver:
 	def solve(self, body=None):
 
 		# open the file that contains force coefficients
-		outfile = open(Case.path+'/forceCoeffs.dat',
-					   ('w' if Parameters.start == 0 else 'a'))
+		if body:
+			outfile = open(Case.path+'/forceCoeffs.dat',
+					   	  ('w' if Parameters.start == 0 else 'a'))
 
 		# time-integration using Euler method
 		tic = timer_start()
@@ -91,12 +92,14 @@ class Solver:
 				Solver.v.write()
 				Solver.p.write()
 			# write force coefficients
-			outfile.write('%f \t %f \t %f' 
-						  % (Parameters.ite*Parameters.dt, body.cl, body.cd))
+			if body:
+				outfile.write('%f \t %f \t %f' 
+							  % (Parameters.ite*Parameters.dt, body.cl, body.cd))
 		
 		timer_stop(tic, info='DONE')
 		# close the file containing force coefficients
-		outfile.close()
+		if body:
+			outfile.close()
 
 	def intermediate_velocity(self):
 		"""Computes the intermediate velocity field.
