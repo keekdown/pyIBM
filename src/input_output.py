@@ -17,6 +17,9 @@ def read_inputs():
 	parser.add_argument('-p', '--path', dest='path', type=str,
 						help='path of the case folder')
 
+	parser.add_argument('-f', '--file', dest='file', type=str,
+						help='path of the file')
+
 	parser.add_argument('--mesh', dest='mesh', action='store_true',
 						help=('generates the computational domain ' + 
 							 'without solving the Navier-Stokes equations'))
