@@ -1,89 +1,84 @@
 # file: $pyIBM/scripts/geometry_discretization.py
 # author: Olivier Mesnard (mesnardo@gwu.edu)
-# BarbaGroup (lorenabarba.com)
+# description: Discretization, rotation, translation and scaling 
+#			   of a given geometry
 
 
 import os
 import argparse
-
 import math
+
 import numpy as np
 from matplotlib import pyplot as plt
 
 
 def read_inputs():
+	"""Parses the command-line."""
+	# create the parser
 	parser = argparse.ArgumentParser(description='Geometry discretization')
-
+	# fill the parser with arguments
 	parser.add_argument('-p', '--path', dest='path', type=str,
 						help='path of the coordinates file')
-
-	parser.add_argument('-n', dest='n', type=int,
-						default=None,
-						help='number of points to discretize')
-
-	parser.add_argument('-l', '--lc', dest='lc', type=float,
-						default=None,
-						help='spatial distance between two consecutive points')
-
-	parser.add_argument('-s', '--scale', dest='scale', type=float,
-						default=1.0,
-						help='scale the geometry')
-
-	parser.add_argument('-r', '--rotation', dest='rotation', type=float,
+	parser.add_argument('-n', dest='n', type=int, default=None,
+						help='number of points for discretization')
+	parser.add_argument('-l', '--lc', dest='lc', type=float, default=None,
+						help='segment-length between two consecutive points')
+	parser.add_argument('-s', '--scale', dest='scale', type=float, default=1.0,
+						help='scaling factor of the new geometry')
+	parser.add_argument('-r', '--rotation', dest='rotation', type=float, 
 						default=0.0,
 						help='angle of rotation in degrees')
-
 	parser.add_argument('-c', '--center', dest='center', type=float,
 						default=[None, None],
 						help='center of rotation')
-
-	parser.add_argument('-t', '--translation', dest='translation', type=float, nargs='+',
-						default=[0.0, 0.0, 0.0],
+	parser.add_argument('-t', '--translation', dest='translation', type=float, 
+						nargs='+', default=[0.0, 0.0, 0.0],
 						help='displacement in the x- and y- directions')
-
 	parser.add_argument('-o', '--output', dest='output', type=str,
 						default='new_body',
 						help='name of the output file')
-
+	parser.add_argument('--show', dest='show', action='store_true',
+						help='displays the initial and current geometries')
 	return parser.parse_args()
 
 
 class Geometry:
 	"""Definition of the geometry."""
-	def __init__(self, file_name):
+	def __init__(self, file_path):
 		"""Initializes the geometry by reading the coordinates file.
 		
 		Arguments
 		---------
 		file_name -- path of the coordinates file.
 		"""
-		self.read(file_name)
+		self.read(file_path)
 		self.get_center_mass()
 
-	def read(self, file_name):
+	def read(self, file_path):
 		"""Stores the coordinates of the geometry into arrays.
 		
 		Arguments
 		--------
-		file_name -- path of the coordinates file.
+		file_path -- path of the coordinates file.
 		"""
-		with open(file_name, 'r') as infile:
+		with open(file_path, 'r') as infile:
 			self.x, self.y = np.loadtxt(infile, dtype=float, 
 						  	  			delimiter='\t', unpack=True)
+		# store initial coordinates
 		self.x_old, self.y_old = self.x.copy(), self.y.copy()
 
-	def write(self, file_name):
+	def write(self, file_path):
 		"""Write the coordinates of the geometry into a file.
 		
 		Arguments
 		---------
-		file_name -- basename of the output file.
+		file_path -- path of the output file.
 		"""
-		with open(file_name+'.bdy', 'w') as outfile:
+		file_name = os.path.splitext(os.path.basename(file_path))[0]
+		with open(file_path, 'w') as outfile:
 			np.savetxt(outfile, np.c_[self.x, self.y],
 					   fmt='%.6f', delimiter='\t',
-					   header='%s (%d points)' \
-					   		  % (os.path.basename(file_name), self.x.size))
+					   header='%s (%d points)' % (file_name, self.x.size))
 
 	def get_distance(self, x_start, y_start, x_end, y_end):
 		"""Returns the distance between two points.
@@ -101,8 +96,9 @@ class Geometry:
 		return np.sum(np.sqrt((x[1:]-x[0:-1])**2+(y[1:]-y[0:-1])**2))
 
 	def get_center_mass(self):
-		"""Finds the center of mass."""
-		self.x_cm, self.y_cm = self.x.sum()/self.x.size, self.y.sum()/self.y.size
+		"""Computes the center of mass."""
+		self.x_cm = self.x.sum()/self.x.size
+		self.y_cm = self.y.sum()/self.y.size
 
 	def rotation(self, aoa=0.0, x_rot=None, y_rot=None):
 		"""Rotates the geometry.
@@ -115,8 +111,10 @@ class Geometry:
 		if not (x_rot and y_rot):
 			x_rot, y_rot = self.x_cm, self.y_cm
 		aoa *= math.pi/180.
-		x_tmp = x_rot + (self.x-x_rot)*math.cos(aoa) - (self.y-y_rot)*math.sin(aoa)
-		y_tmp = y_rot + (self.x-x_rot)*math.sin(aoa) + (self.y-y_rot)*math.cos(aoa)
+		x_tmp = x_rot + (self.x-x_rot)*math.cos(aoa) \
+					  - (self.y-y_rot)*math.sin(aoa)
+		y_tmp = y_rot + (self.x-x_rot)*math.sin(aoa) \
+					  + (self.y-y_rot)*math.cos(aoa)
 		self.x, self.y = x_tmp, y_tmp
 		self.get_center_mass()
 
@@ -125,7 +123,7 @@ class Geometry:
 		
 		Arguments
 		---------
-		x_trans, y_trans -- displacement in the x- and y- directions (default 0.0, 0.0).
+		x_trans, y_trans -- x- and y- displacements (default 0.0, 0.0).
 		"""
 		self.x += x_trans
 		self.y += y_trans
@@ -182,7 +180,8 @@ class Geometry:
 			# solve for y
 			# coefficients of the second-order polynomial
 			a = (x_end-x_tmp)**2 + (y_end-y_tmp)**2
-			b = 2.0*( (x_end-x_tmp)*(y_tmp*(x_start-x_end) + y_end*(x_tmp-x_start)) 
+			b = 2.0*( (x_end-x_tmp)*( y_tmp*(x_start-x_end) 
+									+ y_end*(x_tmp-x_start) ) 
 					- y_start*(y_end-y_tmp)**2 )
 			c = (y_start**2-lc**2)*(y_end-y_tmp)**2 \
 				+ (y_tmp*(x_start-x_end) + y_end*(x_tmp-x_start))**2
@@ -232,7 +231,8 @@ class Geometry:
 			return
 
 		# copy coordinates and initialize new ones
-		x_old, y_old = np.append(self.x, self.x[0]), np.append(self.y, self.y[0])
+		x_old = np.append(self.x, self.x[0]) 
+		y_old = np.append(self.y, self.y[0])
 		x_new, y_new = np.empty(N, dtype=float), np.empty(N, dtype=float)
 		# first element
 		x_new[0], y_new[0] = x_old[0], y_old[0]
@@ -245,7 +245,9 @@ class Geometry:
 			distance = self.get_distance(x_start, y_start, x_end, y_end)
 			if lc-distance <= tol:
 				# interpolation method
-				x_new[i+1], y_new[i+1] = self.interpolation(x_start, y_start, x_end, y_end, lc)
+				x_new[i+1], y_new[i+1] = self.interpolation(x_start, y_start, 
+															x_end, y_end, 
+															lc)
 			else:
 				# projection method
 				while I < x_old.size-2 and lc-distance > tol:
@@ -257,56 +259,57 @@ class Geometry:
 														 x_tmp, y_tmp, 
 														 x_end, y_end, 
 														 lc)
-		# stores the new discretization
+		# store the new discretization
 		self.x, self.y = x_new.copy(), y_new.copy()
 
 	def plot(self):
 		"""Plots the geometry."""
-		size = 10
-		bound = 1.0
-		xmin = min(self.x.min(), self.x_old.min()) - bound
-		xmax = max(self.x.max(), self.x_old.max()) + bound
-		ymin = min(self.y.min(), self.y_old.min()) - bound
-		ymax = max(self.y.max(), self.y_old.max()) + bound
-		ratio = (self.y.max() - self.y.min()) / (self.x.max() - self.x.min())
-		plt.figure(figsize=(size, size*(ymax-ymin)/(xmax-xmin)))
+		plt.figure()
 		plt.grid(True)
 		plt.xlabel(r'$x$', fontsize=18)
 		plt.ylabel(r'$y$', fontsize=18)
 		plt.plot(np.append(self.x_old, self.x_old[0]), 
 				 np.append(self.y_old, self.y_old[0]),
+				 label='initial',
 				 color='k', ls='-', lw=2, marker='o', markersize=6)
 		plt.plot(np.append(self.x, self.x[0]), 
 				 np.append(self.y, self.y[0]),
+				 label='current',
 				 color='r', ls='-', lw=2, marker='o', markersize=6)
-		plt.xlim(xmin, xmax)
-		plt.ylim(ymin, ymax)
+		plt.axis('equal')
+		plt.legend(loc='best', prop={'size': 16})
 		plt.show()
 
 
 def main():
+	"""Applies discretization, scaling, rotation and translation 
+	to a given geometry.
+	"""
 	# parse the command-line
 	args = read_inputs()
 
 	# create the body reading the coordinate file
 	body = Geometry(args.path)
 	
-	# discretize the body
+	# re-discretize the body
 	body.discretize(N=args.n, lc=args.lc)
 	
 	# scale the body 
 	body.scale(ratio=args.scale)
-	# apply rotation to the body
+	# rotation of the body
 	body.rotation(aoa=args.rotation, x_rot=args.center[0], y_rot=args.center[1])
-	# displace the body
+	# translation of the body
 	body.translation(x_trans=args.translation[0], y_trans=args.translation[1])
 	
 	# write the new coordinates into a file
-	dirname = (os.path.dirname(args.path) if os.path.dirname(args.path) else '.')
-	body.write(dirname+'/'+args.output)
+	dir_name = (os.path.dirname(args.path) if os.path.dirname(args.path) 
+										   else '.')
+	outfile_path = dir_name+'/'+args.output+'.bdy'
+	body.write(outfile_path)
 	
 	# plot the body (initial and new configuration)
-	body.plot()
+	if args.show:
+		body.plot()
 
 
 if __name__ == '__main__':
