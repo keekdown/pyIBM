@@ -10,7 +10,7 @@ import argparse
 import numpy as np
 from matplotlib import pyplot as plt
 
-sys.path.insert(0,'../src')
+sys.path.insert(0,'./src')
 from case import Case
 from mesh import Mesh
 from parameters import Parameters
