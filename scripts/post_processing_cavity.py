@@ -42,7 +42,7 @@ def main():
 	Solver.p.read()
 	
 	# read velocity on the centered vertical line of the cavity
-	file_path = os.getcwd()+'/resources/ghia_et_al_1982/u_vertical_line.dat'
+	file_path = os.getcwd()+'../resources/ghia_et_al_1982/u_vertical_line.dat'
 	with open(file_path, 'r') as file_name:
 		data = np.genfromtxt(file_name, 
 							 dtype=float, names=True, unpack=True)
