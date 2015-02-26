@@ -9,6 +9,7 @@ import yaml
 
 from case import Case
 from mesh import Mesh
+from solver import Solver
 
 
 class Body:
@@ -37,7 +38,7 @@ class Body:
 										delimiter='\t', unpack=True)
 		
 		self.N = len(self.x)    # number of body points
-		print '\n-> Number of points on the body: ', self.N, '\n'
+		print ('\n-> Number of points on the body: ', self.N, '\n')
 		
 		# compute the length vector
 		self.get_length()
@@ -69,11 +70,11 @@ class Body:
 		"""Finds the closest Eulerian point on the mesh grid."""
 		self.neighbor = np.empty(self.N, dtype=int)
 		for k, (x, y) in enumerate(zip(self.x, self.y)):
-			for i in xrange(Mesh.Nx-1):
+			for i in range(Mesh.Nx-1):
 				if Mesh.x[i] <= x < Mesh.x[i+1]:
 					I = i
 					break
-			for j in xrange(Mesh.Ny-1):
+			for j in range(Mesh.Ny-1):
 				if Mesh.y[j] <= y < Mesh.y[j+1]:
 					J = j
 					break

@@ -10,7 +10,7 @@ import argparse
 import numpy as np
 from matplotlib import pyplot as plt
 
-sys.path.insert(0,'./src')
+sys.path.insert(0,'../src')
 from case import Case
 from mesh import Mesh
 from parameters import Parameters
@@ -42,7 +42,7 @@ def main():
 	Solver.p.read()
 	
 	# read velocity on the centered vertical line of the cavity
-	file_path = os.getcwd()+'/resources/ghia_et_al_1982/u_vertical_line.dat'
+	file_path = os.getcwd()+ '/' +'../resources/ghia_et_al_1982/u_vertical_line.dat'
 	with open(file_path, 'r') as file_name:
 		data = np.genfromtxt(file_name, 
 							 dtype=float, names=True, unpack=True)
@@ -50,7 +50,7 @@ def main():
 		u_vl_ghia = data[str(Parameters.Re)]
 	
 	# read velocity on the centered horizontal line of the cavity
-	file_path = os.getcwd()+'/resources/ghia_et_al_1982/v_horizontal_line.dat'
+	file_path = os.getcwd()+'../resources/ghia_et_al_1982/v_horizontal_line.dat'
 	with open(file_path, 'r') as file_name:
 		data = np.genfromtxt(file_name, 
 							 dtype=float, names=True, unpack=True)

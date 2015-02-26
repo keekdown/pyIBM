@@ -52,4 +52,4 @@ def timer_stop(tic, info=None):
 	tic -- time when the timer starts.
 	info -- info to ouput (default None).
 	"""
-	print '{%s} Execution time: %.3f s' % (info, float(time.time()-tic))
+	print ('{%s} Execution time: %.3f s' % (info, float(time.time()-tic)))

@@ -51,7 +51,7 @@ class Matrix:
 		p = dct[direction]['p']
 
 		if scheme == 'backward':
-			for i in xrange(Nx*Ny):
+			for i in range(Nx*Ny):
 				if direction == 'x':
 					I, J = i%Nx, i/Nx
 				elif direction =='y':
@@ -67,7 +67,7 @@ class Matrix:
 					A.append([i, i-p, -1./d[I-1]])
 					A.append([i, i, 1./d[I-1]])
 		elif scheme == 'central':
-			for i in xrange(Nx*Ny):
+			for i in range(Nx*Ny):
 				if direction == 'x':
 					I, J = i%Nx, i/Nx
 				elif direction =='y':
@@ -109,7 +109,7 @@ class Matrix:
 		bc = self.bc
 		A = []
 		B = np.zeros(Nx*Ny, dtype=float)
-		for i in xrange(Nx*Ny):
+		for i in range(Nx*Ny):
 			I, J = i%Nx, i/Nx
 			#left
 			if I == 0:

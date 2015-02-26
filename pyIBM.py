@@ -35,6 +35,6 @@ def main():
 	
 
 if __name__ == '__main__':
-	print '\n\t----- pyIBM - START -----\n'
+	print ('\n\t----- pyIBM - START -----\n')
 	main()
-	print '\n\t----- pyIBM - END -----\n'
+	print ('\n\t----- pyIBM - END -----\n')

@@ -42,8 +42,8 @@ def interpolation(u, body):
 	for k, (neighbor, x, y) in enumerate(zip(body.neighbor, body.x, body.y)):
 		h = ( Mesh.x[neighbor%Mesh.Nx+1]
 			- Mesh.x[neighbor%Mesh.Nx] )
-		for i in xrange(-2,3):
-			for j in xrange(-2,3):
+		for i in range(-2,3):
+			for j in range(-2,3):
 				I = neighbor%Mesh.Nx + i
 				J = neighbor/Mesh.Nx + j
 				uk[k] += ( u[J*Mesh.Nx+I]
@@ -68,8 +68,8 @@ def distribution(fk, body):
 	for neighbor, x, y, f_k in zip(body.neighbor, body.x, body.y, fk):
 		h = ( Mesh.x[neighbor%Mesh.Nx+1]
 			- Mesh.x[neighbor%Mesh.Nx] )
-		for i in xrange(-2,3):
-			for j in xrange(-2,3):
+		for i in range(-2,3):
+			for j in range(-2,3):
 				I = neighbor%Mesh.Nx + i
 				J = neighbor/Mesh.Nx + j
 				f[J*Mesh.Nx+I] += ( f_k
@@ -95,7 +95,7 @@ def ibm(body, u, v):
 	dt = Parameters.dt
 	N_ibm = 1
 	body.cl,body.cd = 0.,0.
-	for ite in xrange(N_ibm):
+	for ite in range(N_ibm):
 		body.u = interpolation(u, body)
 		body.v = interpolation(v, body)
 		body.fx[:] = (body.ud[:] - body.u[:]) / dt

@@ -111,14 +111,14 @@ class Mesh:
 		# write the mesh
 		self.write()
 
-		print '\n'
-		print '-> Number of points in the x-direction: ', Mesh.Nx
-		print '-> Number of points in the y-direction: ', Mesh.Ny
-		print '\n'
+		print ('\n')
+		print ('-> Number of points in the x-direction: ', Mesh.Nx)
+		print ('-> Number of points in the y-direction: ', Mesh.Ny)
+		print ('\n')
 
 	def generate(self):
 		"""Generates the mesh."""
-		for direction in Mesh.directions.itervalues():
+		for direction in Mesh.directions.values():
 			# generate the mesh in each direction
 			direction.generate()
 	
@@ -128,7 +128,7 @@ class Mesh:
 
 	def write(self):
 		"""Writes the mesh into a data file."""
-		with open(Case.path+'/mesh.dat', 'w') as outfile:
+		with open(Case.path+'/mesh.dat', 'wb') as outfile:
 			np.savetxt(outfile, np.c_[Mesh.x, Mesh.y, Mesh.dx, Mesh.dy], 
 					   fmt='%.6f', delimiter='\t', 
 					   header='Mesh (%d by %d): x, y, dx, dy' 

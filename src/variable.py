@@ -80,7 +80,7 @@ class Variable:
 		info_bc -- dictionary that contains the info related to the boundary conditions.
 		"""
 		self.bc = {}
-		for location, value in info_bc.iteritems():
+		for location, value in info_bc.items():
 			N = (Mesh.Nx if location in ['bottom', 'top'] else Mesh.Ny)
 			self.bc[location] = BoundaryCondition(value, N)
 

@@ -33,23 +33,23 @@ class Solver:
 		# initialize flow variables
 		self.initialize_variables()
 
-		print '\n{Assembling matrices}'
+		print ('\n{Assembling matrices}')
 		tic = timer_start()
 		if not skip_assemble:
 			self.assemble_matrices()
 		else:
-			print '--> skipped'
+			print ('--> skipped')
 		timer_stop(tic, info='Assembling matrices')
 
 		if not skip_poisson:
 			Solver.poisson = Poisson(Solver.p)
 		else:
-			print '--> Poisson skipped'
+			print ('--> Poisson skipped')
 
 	def initialize_variables(self):
 		with open(Case.path+'/_infoFlow.yaml', 'r') as infile:
 			info_variables = yaml.load(infile)
-		for name, info in info_variables.iteritems():
+		for name, info in info_variables.items():
 			setattr(Solver, name, Variable(name, info))
 	
 	def assemble_matrices(self):
@@ -68,8 +68,8 @@ class Solver:
 		tic = timer_start()
 		while Parameters.ite < Parameters.start + Parameters.nt:
 			Parameters.ite += 1
-			print '\nIteration %d - Time = %f' \
-				  % (Parameters.ite, Parameters.ite*Parameters.dt)
+			print ('\nIteration %d - Time = %f \\'
+				  % (Parameters.ite, Parameters.ite*Parameters.dt) )
 
 			# get intermediate velocity
 			self.intermediate_velocity()
@@ -85,7 +85,7 @@ class Solver:
 
 			# write variable fields
 			if Parameters.ite%Parameters.write_every == 0:
-				print '\n{Writting results}'
+				print ('\n{Writting results}')
 				if not os.path.isdir(Case.path+'/'+str(Parameters.ite)):
 					os.system('mkdir '+Case.path+'/'+str(Parameters.ite))
 				Solver.u.write()
@@ -132,8 +132,8 @@ class Solver:
 		"""Solves the Poisson equation for the pressure field."""
 		b = 1./Parameters.dt * (grad(Solver.u, 'x') + grad(Solver.v, 'y'))
 		Solver.p.field = Solver.poisson.solve(Solver.p.laplacian.mat, b-Solver.p.laplacian.bc_vect, Solver.p.field)
-		print '{Poisson} Number of iterations: %d' \
-			  % Solver.poisson.ite
+		print ('{Poisson} Number of iterations: %d \\'
+			  % Solver.poisson.ite)
 
 	def update_velocity(self):
 		"""Updates the velocity field with pressure correction

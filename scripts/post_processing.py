@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import cm
 
-sys.path.insert(0,'./src')
+sys.path.insert(0,'../src')
 from case import Case
 from domain import Domain
 from mesh import Mesh
