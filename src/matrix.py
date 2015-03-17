@@ -93,7 +93,7 @@ class Matrix:
 					A.append([i, i+p, 0.5/d[I]])
 		
 		val, row, col = [x[2] for x in A], [x[0] for x in A], [x[1] for x in A]
-		
+		print(len(val),len(row),len(col),Nx*Ny)
 		return csr_matrix((val, (row, col)), shape=(Nx*Ny, Nx*Ny), dtype=float), B
 
 	def set_laplacian(self, direction=None, scheme='central'):

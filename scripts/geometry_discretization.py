@@ -75,7 +75,7 @@ class Geometry:
 		file_path -- path of the output file.
 		"""
 		file_name = os.path.splitext(os.path.basename(file_path))[0]
-		with open(file_path, 'w') as outfile:
+		with open(file_path, 'wb') as outfile:
 			np.savetxt(outfile, np.c_[self.x, self.y],
 					   fmt='%.6f', delimiter='\t',
 					   header='%s (%d points)' % (file_name, self.x.size))

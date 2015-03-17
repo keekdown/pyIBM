@@ -1,0 +1,13 @@
+- direction: x
+  start: -10.0
+  subdomains:
+    - end: 10.0
+      cells: 100
+
+- direction: y
+  start: -10.0
+  subdomains:
+    - end: 10.0
+      cells: 100
+
+- body

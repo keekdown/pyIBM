@@ -15,6 +15,7 @@ from body import Body
 
 class Domain:
 	"""A Domain contains a Mesh and possibly an immersed boundary."""
+#     """Класс для создания области которая содержит сетку и возможно погруженную границу"""
 	def __init__(self, is_show=False):
 		"""Creates the domain by generating a mesh
 		and possibly an immersed boundary.

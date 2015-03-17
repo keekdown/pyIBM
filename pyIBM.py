@@ -20,7 +20,7 @@ def main():
 
 	# parse the command-line
 	args = read_inputs()
-
+    
 	# create the case
 	Case(args.path)
 
