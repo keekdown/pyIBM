@@ -5,9 +5,12 @@ time:
   dt: 1.0E-03
   writeEvery: 100
 
-Re: 40
+Re: 100
 
 poisson:
   solver: cg
   tol: 1.0E-06
-  maxiter: 400
+  maxiter: 40000000
+  precond:
+    name: AMG
+    cycle: V
