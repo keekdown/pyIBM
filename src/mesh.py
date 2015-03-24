@@ -57,10 +57,9 @@ class Direction:
                 else:
                     start = self.start
                 h = (subdomain.end - start) / (subdomain.N - 1)
-            #FIXME:ниже попробовать использовать linspace
-                coord = list(start + h*np.arange(subdomain.N))#координаты точек на плоскости
+            #FIXME:use linspace
+                coord = list(start + h*np.arange(subdomain.N))
     
-        #скорее всего,код ниже генерирует координаты поотдельности в зависмости от того,есть ли в поддомене uniform
         for i, subdomain in enumerate(self.subdomains):
             if not subdomain.is_uniform:
                 if i < i_uniform:
@@ -79,7 +78,7 @@ class Direction:
                         else:
                             coord.append(self.end)
                             break
-        self.N = len(coord)#количество точек
+        self.N = len(coord)
         self.coord = np.array(coord)
         self.delta = np.empty(self.N, dtype=float)
         self.delta[0:self.N-1] = self.coord[1:self.N] - self.coord[0:self.N-1]
@@ -99,7 +98,7 @@ class Mesh:
         for info in info_mesh:
             if 'direction' in info:
                 Mesh.directions[info['direction']] = Direction(info)
-            elif 'body' in info:#проверка на погруженность,если есть погруженная то правда
+            elif 'body' in info:
                 Mesh.is_body = True
         
         # generate the mesh

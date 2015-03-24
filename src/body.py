@@ -36,7 +36,7 @@ class Body:
 		with open(Case.path+'/'+self.coord_file, 'r') as infile:
 			self.x, self.y = np.loadtxt(infile, dtype=float, 
 										delimiter='\t', unpack=True)
-		#TODO:Ниже определение количества точек погруженной границы только по иксу,возможны ошибки,обдумай
+		#TODO:bug with generate points by only x axis
 		self.N = len(self.x)    # number of body points
 		print ('\n-> Number of points on the body: ', self.N, '\n')
 		
@@ -78,7 +78,7 @@ class Body:
 				if Mesh.y[j] <= y < Mesh.y[j+1]:
 					J = j
 					break
-			self.neighbor[k] = J*Mesh.Nx + I#TODO: непонятно почему именно J*Nx+I,возможно это определение соседа погруженной точки по линейной функции
+			self.neighbor[k] = J*Mesh.Nx + I
 
 	def kinematics(self):
 		"""Defines the kinematics of a moving immersed boundary."""

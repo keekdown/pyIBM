@@ -5,7 +5,6 @@
 
 import os
 
-#класс для создания конечных результатов и для предобработки yaml файлов
 class Case:
 	"""Sets up information about the case."""
 	def __init__(self, path):

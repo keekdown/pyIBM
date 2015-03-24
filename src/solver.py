@@ -52,6 +52,10 @@ class Solver:
 		for name, info in info_variables.items():
 			setattr(Solver, name, Variable(name, info))
 	
+	#def initialize_solver_variables(self):
+	#	with open(Case.path+'/_infoSolver.yaml','r') as infile:
+	#		info_solver = yaml.load(infile)
+	
 	def assemble_matrices(self):
 		Solver.u.assemble_matrices()
 		Solver.v.assemble_matrices()

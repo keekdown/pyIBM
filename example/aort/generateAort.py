@@ -1,3 +1,5 @@
+#!/usr/bin/env python 
+# -*- coding: utf-8 -*-
 import numpy
 f=open('aort.bdy','w')
 start=float(input("Введите начало аорты отсчета на сетке ->\n"))
